@@ -4363,7 +4363,7 @@ var MessageResponse = class {
   }
 };
 var LOGGER_WRITE_PATH = `${INTERNAL_PATH_PREFIX}logger.write`;
-function registerCreateLogEntryRoute(router2, logger4) {
+function registerCreateLogEntryRoute(router2, logger3) {
   router2.route(LOGGER_WRITE_PATH, (req, res) => {
     if (req.body === void 0) {
       return res.fail();
@@ -4372,7 +4372,7 @@ function registerCreateLogEntryRoute(router2, logger4) {
     if (level === void 0) {
       return res.fail();
     }
-    logger4.write({ level, data: [message], scope });
+    logger3.write({ level, data: [message], scope });
     return res.success();
   });
 }
@@ -6311,26 +6311,321 @@ if (streamDeck.manifest.SDKVersion >= 3) {
   process.exit(errorCode.incompatibleSdkVersion);
 }
 
-// src/actions/swap-monitor.ts
+// src/actions/base-memory-action.ts
+var import_child_process2 = require("child_process");
+var import_util2 = require("util");
+
+// src/utils/memory-stats.ts
 var import_child_process = require("child_process");
 var import_util = require("util");
 var execFileAsync = (0, import_util.promisify)(import_child_process.execFile);
-var logger2 = streamDeck.logger.createScope("SwapMonitor");
-var SwapMonitorBase = class extends SingletonAction {
+var PAGE_SIZE = 16384;
+async function getVmStat() {
+  const { stdout } = await execFileAsync("vm_stat");
+  const getValue = (key) => {
+    const match = stdout.match(new RegExp(`${key}:\\s+(\\d+)`));
+    return match ? parseInt(match[1], 10) : 0;
+  };
+  return {
+    pagesFree: getValue("Pages free"),
+    pagesActive: getValue("Pages active"),
+    pagesInactive: getValue("Pages inactive"),
+    pagesSpeculative: getValue("Pages speculative"),
+    pagesWired: getValue("Pages wired down"),
+    pagesCompressor: getValue("Pages stored in compressor")
+  };
+}
+async function getPhysicalMemory() {
+  const { stdout } = await execFileAsync("sysctl", ["hw.memsize"]);
+  const match = stdout.match(/hw\.memsize:\s+(\d+)/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+async function getSwapUsage() {
+  const { stdout } = await execFileAsync("sysctl", ["vm.swapusage"]);
+  const usedMatch = stdout.match(/used\s*=\s*([\d.]+)M/);
+  const totalMatch = stdout.match(/total\s*=\s*([\d.]+)M/);
+  return {
+    used: usedMatch ? parseFloat(usedMatch[1]) / 1024 : 0,
+    // Convert MB to GB
+    total: totalMatch ? parseFloat(totalMatch[1]) / 1024 : 0
+  };
+}
+function pagesToGB(pages) {
+  return pages * PAGE_SIZE / (1024 * 1024 * 1024);
+}
+async function getMemoryStats() {
+  const [vmStat, physicalBytes, swap] = await Promise.all([
+    getVmStat(),
+    getPhysicalMemory(),
+    getSwapUsage()
+  ]);
+  const physicalMemory = physicalBytes / (1024 * 1024 * 1024);
+  const totalPages = physicalBytes / PAGE_SIZE;
+  const appMemory = pagesToGB(vmStat.pagesActive);
+  const wiredMemory = pagesToGB(vmStat.pagesWired);
+  const compressed = pagesToGB(vmStat.pagesCompressor);
+  const cachedFiles = pagesToGB(vmStat.pagesInactive + vmStat.pagesSpeculative);
+  const freeMemory = pagesToGB(vmStat.pagesFree);
+  const memoryUsed = physicalMemory - freeMemory;
+  return {
+    physicalMemory,
+    memoryUsed,
+    appMemory,
+    wiredMemory,
+    compressed,
+    cachedFiles,
+    swapUsed: swap.used,
+    memoryUsedPercent: memoryUsed / physicalMemory * 100,
+    appMemoryPercent: vmStat.pagesActive / totalPages * 100,
+    swapPercent: swap.total > 0 ? swap.used / swap.total * 100 : 0
+  };
+}
+var GREEN = "#33DD33";
+var ORANGE = "#FFAA00";
+var RED = "#FF3333";
+var BLUE = "#3399FF";
+var METRIC_CONFIGS = {
+  physical: {
+    label: "Physical",
+    shortLabel: "RAM",
+    getValue: (s) => s.physicalMemory,
+    getPercent: () => 100,
+    // Always full
+    getColor: () => BLUE,
+    // Static blue
+    showRing: false
+  },
+  memoryUsed: {
+    label: "Memory Used",
+    shortLabel: "USED",
+    getValue: (s) => s.memoryUsed,
+    getPercent: (s) => s.memoryUsedPercent,
+    getColor: (_, s) => {
+      if (s.memoryUsedPercent > 90) return RED;
+      if (s.memoryUsedPercent > 70) return ORANGE;
+      return GREEN;
+    },
+    showRing: true
+  },
+  appMemory: {
+    label: "App Memory",
+    shortLabel: "APP",
+    getValue: (s) => s.appMemory,
+    getPercent: (s) => s.appMemoryPercent,
+    getColor: (_, s) => {
+      if (s.appMemoryPercent > 75) return RED;
+      if (s.appMemoryPercent > 50) return ORANGE;
+      return GREEN;
+    },
+    showRing: true
+  },
+  wired: {
+    label: "Wired Memory",
+    shortLabel: "WIRED",
+    getValue: (s) => s.wiredMemory,
+    getPercent: (s) => s.wiredMemory / s.physicalMemory * 100,
+    getColor: (gb) => {
+      if (gb > 6) return RED;
+      if (gb > 4) return ORANGE;
+      return GREEN;
+    },
+    showRing: true
+  },
+  compressed: {
+    label: "Compressed",
+    shortLabel: "COMP",
+    getValue: (s) => s.compressed,
+    getPercent: (s) => s.compressed / s.physicalMemory * 100,
+    getColor: (gb) => {
+      if (gb > 8) return RED;
+      if (gb > 4) return ORANGE;
+      return GREEN;
+    },
+    showRing: true
+  },
+  cached: {
+    label: "Cached Files",
+    shortLabel: "CACHE",
+    getValue: (s) => s.cachedFiles,
+    getPercent: (s) => s.cachedFiles / s.physicalMemory * 100,
+    getColor: () => GREEN,
+    // Cached is always good
+    showRing: true
+  },
+  swap: {
+    label: "Swap Used",
+    shortLabel: "SWAP",
+    getValue: (s) => s.swapUsed,
+    getPercent: (s) => s.swapPercent,
+    getColor: (gb) => {
+      if (gb >= 4) return RED;
+      if (gb >= 2) return ORANGE;
+      return GREEN;
+    },
+    showRing: true
+  }
+};
+
+// src/actions/base-memory-action.ts
+var execFileAsync2 = (0, import_util2.promisify)(import_child_process2.execFile);
+var BaseMemoryAction = class extends SingletonAction {
   intervals = /* @__PURE__ */ new Map();
+  logger = streamDeck.logger.createScope("MemoryMonitor");
   async onWillAppear(ev) {
     const actionId = ev.action.id;
-    logger2.info(`onWillAppear called for action ${actionId}`);
+    this.logger.info(`${this.metricType} action appeared: ${actionId}`);
     await this.updateDisplay(ev);
     const interval = setInterval(async () => {
       try {
         await this.updateDisplay(ev);
       } catch (error) {
-        logger2.error("Error updating swap display:", error);
+        this.logger.error(`Error updating ${this.metricType} display:`, error);
       }
     }, 2e3);
     this.intervals.set(actionId, interval);
-    logger2.info(`Polling started for action ${actionId}`);
+  }
+  async onWillDisappear(ev) {
+    const actionId = ev.action.id;
+    const interval = this.intervals.get(actionId);
+    if (interval) {
+      clearInterval(interval);
+      this.intervals.delete(actionId);
+      this.logger.info(`${this.metricType} polling stopped: ${actionId}`);
+    }
+  }
+  async onKeyDown(_ev) {
+    try {
+      await execFileAsync2("open", ["-a", "Activity Monitor"]);
+    } catch (error) {
+      this.logger.error("Error opening Activity Monitor:", error);
+    }
+  }
+  async updateDisplay(ev) {
+    const stats = await getMemoryStats();
+    const config = METRIC_CONFIGS[this.metricType];
+    const valueGB = config.getValue(stats);
+    const percent = config.getPercent(stats);
+    const color = config.getColor(valueGB, stats);
+    const svg = this.generateImage(valueGB, percent, color, config.shortLabel, config.showRing);
+    await ev.action.setImage(svg);
+  }
+  generateImage(valueGB, percent, color, label, showRing) {
+    const size = 144;
+    const cx = size / 2;
+    const cy = size / 2;
+    const valueText = valueGB >= 10 ? `${valueGB.toFixed(0)}GB` : valueGB >= 1 ? `${valueGB.toFixed(1)}GB` : `${Math.round(valueGB * 1024)}MB`;
+    if (!showRing) {
+      const svg2 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
+                <rect width="${size}" height="${size}" fill="black"/>
+                <text x="${cx}" y="50" text-anchor="middle" fill="#888888" font-size="18" font-weight="bold" font-family="sans-serif">${label}</text>
+                <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="${color}" font-size="28" font-weight="bold" font-family="sans-serif">${valueText}</text>
+            </svg>`;
+      const base642 = Buffer.from(svg2).toString("base64");
+      return `data:image/svg+xml;base64,${base642}`;
+    }
+    const radius = 54;
+    const stroke = 12;
+    const circumference = 2 * Math.PI * radius;
+    const dashOffset = circumference * (1 - Math.min(percent, 100) / 100);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
+            <rect width="${size}" height="${size}" fill="black"/>
+            <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#333333" stroke-width="${stroke}"/>
+            <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+            <text x="${cx}" y="38" text-anchor="middle" fill="#888888" font-size="16" font-weight="bold" font-family="sans-serif">${label}</text>
+            <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">${valueText}</text>
+        </svg>`;
+    const base64 = Buffer.from(svg).toString("base64");
+    return `data:image/svg+xml;base64,${base64}`;
+  }
+};
+
+// src/actions/swap-monitor.ts
+var SwapMonitorBase = class extends BaseMemoryAction {
+  metricType = "swap";
+};
+var SwapMonitor = action({ UUID: "com.joshroman.macos-memory.swap" })(
+  SwapMonitorBase,
+  { kind: "class", name: "SwapMonitor" }
+);
+
+// src/actions/memory-used.ts
+var MemoryUsedBase = class extends BaseMemoryAction {
+  metricType = "memoryUsed";
+};
+var MemoryUsed = action({ UUID: "com.joshroman.macos-memory.memory-used" })(
+  MemoryUsedBase,
+  { kind: "class", name: "MemoryUsed" }
+);
+
+// src/actions/app-memory.ts
+var AppMemoryBase = class extends BaseMemoryAction {
+  metricType = "appMemory";
+};
+var AppMemory = action({ UUID: "com.joshroman.macos-memory.app-memory" })(
+  AppMemoryBase,
+  { kind: "class", name: "AppMemory" }
+);
+
+// src/actions/wired-memory.ts
+var WiredMemoryBase = class extends BaseMemoryAction {
+  metricType = "wired";
+};
+var WiredMemory = action({ UUID: "com.joshroman.macos-memory.wired" })(
+  WiredMemoryBase,
+  { kind: "class", name: "WiredMemory" }
+);
+
+// src/actions/compressed-memory.ts
+var CompressedMemoryBase = class extends BaseMemoryAction {
+  metricType = "compressed";
+};
+var CompressedMemory = action({ UUID: "com.joshroman.macos-memory.compressed" })(
+  CompressedMemoryBase,
+  { kind: "class", name: "CompressedMemory" }
+);
+
+// src/actions/cached-files.ts
+var CachedFilesBase = class extends BaseMemoryAction {
+  metricType = "cached";
+};
+var CachedFiles = action({ UUID: "com.joshroman.macos-memory.cached" })(
+  CachedFilesBase,
+  { kind: "class", name: "CachedFiles" }
+);
+
+// src/actions/physical-memory.ts
+var PhysicalMemoryBase = class extends BaseMemoryAction {
+  metricType = "physical";
+};
+var PhysicalMemory = action({ UUID: "com.joshroman.macos-memory.physical" })(
+  PhysicalMemoryBase,
+  { kind: "class", name: "PhysicalMemory" }
+);
+
+// src/actions/memory-selector.ts
+var import_child_process3 = require("child_process");
+var import_util3 = require("util");
+var execFileAsync3 = (0, import_util3.promisify)(import_child_process3.execFile);
+var MemorySelectorBase = class extends SingletonAction {
+  intervals = /* @__PURE__ */ new Map();
+  actionSettings = /* @__PURE__ */ new Map();
+  logger = streamDeck.logger.createScope("MemorySelector");
+  async onWillAppear(ev) {
+    const actionId = ev.action.id;
+    const settings2 = ev.payload.settings || {};
+    const metricType = settings2.metricType || "swap";
+    this.actionSettings.set(actionId, metricType);
+    this.logger.info(`Memory selector appeared: ${actionId}, metric: ${metricType}`);
+    await this.updateDisplay(ev, metricType);
+    const interval = setInterval(async () => {
+      try {
+        const currentMetric = this.actionSettings.get(actionId) || "swap";
+        await this.updateDisplay(ev, currentMetric);
+      } catch (error) {
+        this.logger.error("Error updating memory selector display:", error);
+      }
+    }, 2e3);
+    this.intervals.set(actionId, interval);
   }
   async onWillDisappear(ev) {
     const actionId = ev.action.id;
@@ -6339,76 +6634,85 @@ var SwapMonitorBase = class extends SingletonAction {
       clearInterval(interval);
       this.intervals.delete(actionId);
     }
+    this.actionSettings.delete(actionId);
+  }
+  async onDidReceiveSettings(ev) {
+    const actionId = ev.action.id;
+    const settings2 = ev.payload.settings || {};
+    const metricType = settings2.metricType || "swap";
+    this.actionSettings.set(actionId, metricType);
+    this.logger.info(`Settings updated for ${actionId}: ${metricType}`);
+    await this.updateDisplay(ev, metricType);
   }
   async onKeyDown(_ev) {
     try {
-      await execFileAsync("open", ["-a", "Activity Monitor"]);
+      await execFileAsync3("open", ["-a", "Activity Monitor"]);
     } catch (error) {
-      console.error("Error opening Activity Monitor:", error);
+      this.logger.error("Error opening Activity Monitor:", error);
     }
   }
-  async updateDisplay(ev) {
-    const swap = await this.getSwapInfo();
-    logger2.info(`Swap info: ${swap.usedGB.toFixed(2)}GB (${swap.percent.toFixed(1)}%)`);
-    const svg = this.generateProgressRing(swap.usedGB, swap.percent);
-    logger2.debug(`Setting image with SVG (${svg.length} chars)`);
+  async updateDisplay(ev, metricType) {
+    const stats = await getMemoryStats();
+    const config = METRIC_CONFIGS[metricType];
+    const valueGB = config.getValue(stats);
+    const percent = config.getPercent(stats);
+    const color = config.getColor(valueGB, stats);
+    const svg = this.generateImage(valueGB, percent, color, config.shortLabel, config.showRing);
     await ev.action.setImage(svg);
-    logger2.info("Image set successfully");
   }
-  async getSwapInfo() {
-    try {
-      const { stdout } = await execFileAsync("sysctl", ["vm.swapusage"]);
-      const usedMatch = stdout.match(/used\s*=\s*([\d.]+)M/);
-      const totalMatch = stdout.match(/total\s*=\s*([\d.]+)M/);
-      const usedMB = usedMatch ? parseFloat(usedMatch[1]) : 0;
-      const totalMB = totalMatch ? parseFloat(totalMatch[1]) : 1;
-      return {
-        usedGB: usedMB / 1024,
-        totalGB: totalMB / 1024,
-        percent: totalMB > 0 ? usedMB / totalMB * 100 : 0
-      };
-    } catch (error) {
-      console.error("Error getting swap info:", error);
-      return { usedGB: 0, totalGB: 0, percent: 0 };
-    }
-  }
-  generateProgressRing(usedGB, percent) {
+  generateImage(valueGB, percent, color, label, showRing) {
     const size = 144;
     const cx = size / 2;
     const cy = size / 2;
+    const valueText = valueGB >= 10 ? `${valueGB.toFixed(0)}GB` : valueGB >= 1 ? `${valueGB.toFixed(1)}GB` : `${Math.round(valueGB * 1024)}MB`;
+    if (!showRing) {
+      const svg2 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
+                <rect width="${size}" height="${size}" fill="black"/>
+                <text x="${cx}" y="50" text-anchor="middle" fill="#888888" font-size="18" font-weight="bold" font-family="sans-serif">${label}</text>
+                <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="${color}" font-size="28" font-weight="bold" font-family="sans-serif">${valueText}</text>
+            </svg>`;
+      const base642 = Buffer.from(svg2).toString("base64");
+      return `data:image/svg+xml;base64,${base642}`;
+    }
     const radius = 54;
     const stroke = 12;
     const circumference = 2 * Math.PI * radius;
-    const dashOffset = circumference * (1 - percent / 100);
-    let color = "#33DD33";
-    if (usedGB >= 4) {
-      color = "#FF3333";
-    } else if (usedGB >= 2) {
-      color = "#FFAA00";
-    }
-    const label = usedGB >= 1 ? `${usedGB.toFixed(1)}GB` : `${Math.round(usedGB * 1024)}MB`;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}"><rect width="${size}" height="${size}" fill="black"/><circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#333333" stroke-width="${stroke}"/><circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/><text x="${cx}" y="${cy + 8}" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">${label}</text></svg>`;
+    const dashOffset = circumference * (1 - Math.min(percent, 100) / 100);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
+            <rect width="${size}" height="${size}" fill="black"/>
+            <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#333333" stroke-width="${stroke}"/>
+            <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+            <text x="${cx}" y="38" text-anchor="middle" fill="#888888" font-size="16" font-weight="bold" font-family="sans-serif">${label}</text>
+            <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">${valueText}</text>
+        </svg>`;
     const base64 = Buffer.from(svg).toString("base64");
     return `data:image/svg+xml;base64,${base64}`;
   }
 };
-var SwapMonitor = action({ UUID: "com.joshroman.macos-memory.swap" })(
-  SwapMonitorBase,
-  { kind: "class", name: "SwapMonitor" }
+var MemorySelector = action({ UUID: "com.joshroman.macos-memory.custom" })(
+  MemorySelectorBase,
+  { kind: "class", name: "MemorySelector" }
 );
 
 // src/plugin.ts
 streamDeck.logger.setLevel(LogLevel.DEBUG);
-var logger3 = streamDeck.logger.createScope("Plugin");
-logger3.info("Swap Monitor plugin starting...");
-logger3.info("Registering SwapMonitor action...");
+var logger2 = streamDeck.logger.createScope("Plugin");
+logger2.info("macOS Memory plugin starting...");
+logger2.info("Registering actions...");
 streamDeck.actions.registerAction(new SwapMonitor());
-logger3.info("SwapMonitor action registered");
-logger3.info("Connecting to Stream Deck...");
+streamDeck.actions.registerAction(new MemoryUsed());
+streamDeck.actions.registerAction(new AppMemory());
+streamDeck.actions.registerAction(new WiredMemory());
+streamDeck.actions.registerAction(new CompressedMemory());
+streamDeck.actions.registerAction(new CachedFiles());
+streamDeck.actions.registerAction(new PhysicalMemory());
+streamDeck.actions.registerAction(new MemorySelector());
+logger2.info("All actions registered");
+logger2.info("Connecting to Stream Deck...");
 streamDeck.connect().then(() => {
-  logger3.info("Connected to Stream Deck!");
+  logger2.info("Connected to Stream Deck!");
 }).catch((err) => {
-  logger3.error("Failed to connect:", err);
+  logger2.error("Failed to connect:", err);
 });
 /*! Bundled license information:
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Memory Selector</title>
+    <link rel="stylesheet" href="https://sdpi-components.dev/releases/v3/sdpi-components.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #2D2D2D;
+            color: #EEEEEE;
+            padding: 12px;
+            margin: 0;
+        }
+        .sdpi-wrapper {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #9B9B9B;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #3D3D3D;
+            background-color: #3D3D3D;
+            color: #EEEEEE;
+            font-size: 13px;
+        }
+        select:focus {
+            outline: none;
+            border-color: #0078D4;
+        }
+    </style>
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <label for="metricType">Memory Metric</label>
+        <select id="metricType">
+            <option value="swap">Swap Used</option>
+            <option value="memoryUsed">Memory Used</option>
+            <option value="appMemory">App Memory</option>
+            <option value="wired">Wired Memory</option>
+            <option value="compressed">Compressed</option>
+            <option value="cached">Cached Files</option>
+            <option value="physical">Physical Memory</option>
+        </select>
+    </div>
+
+    <script>
+        // Stream Deck Property Inspector
+        let websocket = null;
+        let uuid = null;
+        let actionInfo = null;
+
+        function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inUUID;
+            actionInfo = JSON.parse(inActionInfo);
+
+            // Connect to Stream Deck
+            websocket = new WebSocket("ws://127.0.0.1:" + inPort);
+
+            websocket.onopen = function() {
+                // Register the property inspector
+                websocket.send(JSON.stringify({
+                    event: inRegisterEvent,
+                    uuid: inUUID
+                }));
+
+                // Request current settings
+                websocket.send(JSON.stringify({
+                    event: "getSettings",
+                    context: uuid
+                }));
+            };
+
+            websocket.onmessage = function(evt) {
+                const data = JSON.parse(evt.data);
+
+                if (data.event === "didReceiveSettings") {
+                    const settings = data.payload.settings || {};
+                    if (settings.metricType) {
+                        document.getElementById("metricType").value = settings.metricType;
+                    }
+                }
+            };
+        }
+
+        // Handle dropdown change
+        document.getElementById("metricType").addEventListener("change", function() {
+            const metricType = this.value;
+
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    event: "setSettings",
+                    context: uuid,
+                    payload: {
+                        metricType: metricType
+                    }
+                }));
+            }
+        });
+    </script>
+</body>
+</html>
