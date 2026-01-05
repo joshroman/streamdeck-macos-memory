@@ -1,0 +1,38 @@
+{
+  "Author": "Josh Roman",
+  "Name": "macOS Memory",
+  "Description": "Monitor macOS memory and swap usage with color-coded progress rings",
+  "Version": "1.0.0.0",
+  "UUID": "com.joshroman.macos-memory",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.6"
+  },
+  "Nodejs": {
+    "Version": "20",
+    "Debug": "enabled"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "10.15"
+    }
+  ],
+  "Category": "macOS Memory",
+  "CategoryIcon": "imgs/category",
+  "Icon": "imgs/plugin",
+  "CodePath": "bin/plugin.js",
+  "Actions": [
+    {
+      "UUID": "com.joshroman.macos-memory.swap",
+      "Name": "Swap Usage",
+      "Icon": "imgs/actions/swap",
+      "Tooltip": "Displays current swap memory usage",
+      "States": [
+        {
+          "Image": "imgs/actions/swap"
+        }
+      ]
+    }
+  ]
+}
