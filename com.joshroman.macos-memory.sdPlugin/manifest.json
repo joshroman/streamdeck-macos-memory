@@ -2,12 +2,12 @@
 	"Author": "Josh Roman",
 	"Name": "Mac Memory Monitor",
 	"Description": "Monitor macOS RAM, swap, and memory pressure with live color-coded progress rings. Track memory used, app memory, wired, compressed, cached, and swap usage in real-time on your Stream Deck.",
-	"Version": "1.1.0.0",
+	"Version": "1.2.0.0",
 	"UUID": "com.joshroman.macos-memory",
 	"URL": "https://github.com/joshroman/streamdeck-macos-memory",
-	"SDKVersion": 2,
+	"SDKVersion": 3,
 	"Software": {
-		"MinimumVersion": "6.6"
+		"MinimumVersion": "6.9"
 	},
 	"Nodejs": {
 		"Version": "20",

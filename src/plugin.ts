@@ -1,4 +1,4 @@
-import streamDeck, { LogLevel } from "@elgato/streamdeck";
+import streamDeck from "@elgato/streamdeck";
 
 // Import all actions
 import { SwapMonitor } from "./actions/swap-monitor";
@@ -11,7 +11,7 @@ import { PhysicalMemory } from "./actions/physical-memory";
 import { MemorySelector } from "./actions/memory-selector";
 
 // Set logging level
-streamDeck.logger.setLevel(LogLevel.DEBUG);
+streamDeck.logger.setLevel("debug");
 
 const logger = streamDeck.logger.createScope("Plugin");
 logger.info("macOS Memory plugin starting...");

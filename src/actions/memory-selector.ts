@@ -1,4 +1,5 @@
-import streamDeck, { action, SingletonAction, WillAppearEvent, WillDisappearEvent, KeyDownEvent, DidReceiveSettingsEvent, JsonValue } from "@elgato/streamdeck";
+import streamDeck, { action, SingletonAction, WillAppearEvent, WillDisappearEvent, KeyDownEvent, DidReceiveSettingsEvent } from "@elgato/streamdeck";
+import type { JsonValue } from "@elgato/utils";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { getMemoryStats, MetricType, METRIC_CONFIGS } from "../utils/memory-stats";

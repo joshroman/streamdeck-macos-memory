@@ -8,6 +8,10 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -1332,14 +1336,14 @@ var require_receiver = __commonJS({
        * @return {(Error|RangeError)} The error
        * @private
        */
-      createError(ErrorCtor, message, prefix, statusCode, errorCode2) {
+      createError(ErrorCtor, message, prefix, statusCode, errorCode) {
         this._loop = false;
         this._errored = true;
         const err = new ErrorCtor(
           prefix ? `Invalid WebSocket frame: ${message}` : message
         );
         Error.captureStackTrace(err, this.createError);
-        err.code = errorCode2;
+        err.code = errorCode;
         err[kStatusCode] = statusCode;
         return err;
       }
@@ -3633,305 +3637,10 @@ var require_websocket_server = __commonJS({
   }
 });
 
-// node_modules/@elgato/schemas/dist/streamdeck/plugins/index.mjs
-var DeviceType;
-(function(DeviceType2) {
-  DeviceType2[DeviceType2["StreamDeck"] = 0] = "StreamDeck";
-  DeviceType2[DeviceType2["StreamDeckMini"] = 1] = "StreamDeckMini";
-  DeviceType2[DeviceType2["StreamDeckXL"] = 2] = "StreamDeckXL";
-  DeviceType2[DeviceType2["StreamDeckMobile"] = 3] = "StreamDeckMobile";
-  DeviceType2[DeviceType2["CorsairGKeys"] = 4] = "CorsairGKeys";
-  DeviceType2[DeviceType2["StreamDeckPedal"] = 5] = "StreamDeckPedal";
-  DeviceType2[DeviceType2["CorsairVoyager"] = 6] = "CorsairVoyager";
-  DeviceType2[DeviceType2["StreamDeckPlus"] = 7] = "StreamDeckPlus";
-  DeviceType2[DeviceType2["SCUFController"] = 8] = "SCUFController";
-  DeviceType2[DeviceType2["StreamDeckNeo"] = 9] = "StreamDeckNeo";
-  DeviceType2[DeviceType2["StreamDeckStudio"] = 10] = "StreamDeckStudio";
-  DeviceType2[DeviceType2["VirtualStreamDeck"] = 11] = "VirtualStreamDeck";
-})(DeviceType || (DeviceType = {}));
-var BarSubType;
-(function(BarSubType2) {
-  BarSubType2[BarSubType2["Rectangle"] = 0] = "Rectangle";
-  BarSubType2[BarSubType2["DoubleRectangle"] = 1] = "DoubleRectangle";
-  BarSubType2[BarSubType2["Trapezoid"] = 2] = "Trapezoid";
-  BarSubType2[BarSubType2["DoubleTrapezoid"] = 3] = "DoubleTrapezoid";
-  BarSubType2[BarSubType2["Groove"] = 4] = "Groove";
-})(BarSubType || (BarSubType = {}));
+// node_modules/@elgato/utils/dist/i18n/language.js
+var defaultLanguage = "en";
 
-// node_modules/ws/wrapper.mjs
-var import_stream = __toESM(require_stream(), 1);
-var import_receiver = __toESM(require_receiver(), 1);
-var import_sender = __toESM(require_sender(), 1);
-var import_websocket = __toESM(require_websocket(), 1);
-var import_websocket_server = __toESM(require_websocket_server(), 1);
-var wrapper_default = import_websocket.default;
-
-// node_modules/@elgato/streamdeck/dist/index.js
-var import_node_path = __toESM(require("node:path"), 1);
-var import_node_process = require("node:process");
-var import_node_fs = __toESM(require("node:fs"), 1);
-var supportedLanguages = ["de", "en", "es", "fr", "ja", "ko", "zh_CN", "zh_TW"];
-var RegistrationParameter;
-(function(RegistrationParameter2) {
-  RegistrationParameter2["Port"] = "-port";
-  RegistrationParameter2["Info"] = "-info";
-  RegistrationParameter2["PluginUUID"] = "-pluginUUID";
-  RegistrationParameter2["RegisterEvent"] = "-registerEvent";
-})(RegistrationParameter || (RegistrationParameter = {}));
-var Target;
-(function(Target2) {
-  Target2[Target2["HardwareAndSoftware"] = 0] = "HardwareAndSoftware";
-  Target2[Target2["Hardware"] = 1] = "Hardware";
-  Target2[Target2["Software"] = 2] = "Software";
-})(Target || (Target = {}));
-function freeze(value) {
-  if (value !== void 0 && value !== null && typeof value === "object" && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    Object.values(value).forEach(freeze);
-  }
-}
-function get(path2, source) {
-  const props = path2.split(".");
-  return props.reduce((obj, prop) => obj && obj[prop], source);
-}
-var I18nProvider = class _I18nProvider {
-  language;
-  readTranslations;
-  /**
-   * Default language to be used when a resource does not exist for the desired language.
-   */
-  static DEFAULT_LANGUAGE = "en";
-  /**
-   * Map of localized resources, indexed by their language.
-   */
-  _translations = /* @__PURE__ */ new Map();
-  /**
-   * Initializes a new instance of the {@link I18nProvider} class.
-   * @param language The default language to be used when retrieving translations for a given key.
-   * @param readTranslations Function responsible for loading translations.
-   */
-  constructor(language, readTranslations) {
-    this.language = language;
-    this.readTranslations = readTranslations;
-  }
-  /**
-   * Translates the specified {@link key}, as defined within the resources for the {@link language}. When the key is not found, the default language is checked.
-   *
-   * Alias of `I18nProvider.translate(string, Language)`
-   * @param key Key of the translation.
-   * @param language Optional language to get the translation for; otherwise the default language.
-   * @returns The translation; otherwise the key.
-   */
-  t(key, language = this.language) {
-    return this.translate(key, language);
-  }
-  /**
-   * Translates the specified {@link key}, as defined within the resources for the {@link language}. When the key is not found, the default language is checked.
-   * @param key Key of the translation.
-   * @param language Optional language to get the translation for; otherwise the default language.
-   * @returns The translation; otherwise the key.
-   */
-  translate(key, language = this.language) {
-    if (language === _I18nProvider.DEFAULT_LANGUAGE) {
-      return get(key, this.getTranslations(language))?.toString() || key;
-    }
-    return get(key, this.getTranslations(language))?.toString() || get(key, this.getTranslations(_I18nProvider.DEFAULT_LANGUAGE))?.toString() || key;
-  }
-  /**
-   * Gets the translations for the specified language.
-   * @param language Language whose translations are being retrieved.
-   * @returns The translations, otherwise `null`.
-   */
-  getTranslations(language) {
-    let translations = this._translations.get(language);
-    if (translations === void 0) {
-      translations = supportedLanguages.includes(language) ? this.readTranslations(language) : null;
-      freeze(translations);
-      this._translations.set(language, translations);
-    }
-    return translations;
-  }
-};
-function parseLocalizations(contents) {
-  const json = JSON.parse(contents);
-  if (json !== void 0 && json !== null && typeof json === "object" && "Localization" in json) {
-    return json["Localization"];
-  }
-  throw new TypeError(`Translations must be a JSON object nested under a property named "Localization"`);
-}
-var LogLevel;
-(function(LogLevel2) {
-  LogLevel2[LogLevel2["ERROR"] = 0] = "ERROR";
-  LogLevel2[LogLevel2["WARN"] = 1] = "WARN";
-  LogLevel2[LogLevel2["INFO"] = 2] = "INFO";
-  LogLevel2[LogLevel2["DEBUG"] = 3] = "DEBUG";
-  LogLevel2[LogLevel2["TRACE"] = 4] = "TRACE";
-})(LogLevel || (LogLevel = {}));
-var ConsoleTarget = class {
-  /**
-   * @inheritdoc
-   */
-  write(entry) {
-    switch (entry.level) {
-      case LogLevel.ERROR:
-        console.error(...entry.data);
-        break;
-      case LogLevel.WARN:
-        console.warn(...entry.data);
-        break;
-      default:
-        console.log(...entry.data);
-    }
-  }
-};
-var EOL = "\n";
-function stringFormatter(opts) {
-  {
-    return (entry) => {
-      const { data, level, scope } = entry;
-      let prefix = `${(/* @__PURE__ */ new Date()).toISOString()} ${LogLevel[level].padEnd(5)} `;
-      if (scope) {
-        prefix += `${scope}: `;
-      }
-      return `${prefix}${reduce(data)}`;
-    };
-  }
-}
-function reduce(data) {
-  let result = "";
-  let previousWasError = false;
-  for (const value of data) {
-    if (typeof value === "object" && value instanceof Error) {
-      result += `${EOL}${value.stack}`;
-      previousWasError = true;
-      continue;
-    }
-    if (previousWasError) {
-      result += EOL;
-      previousWasError = false;
-    }
-    result += typeof value === "object" ? JSON.stringify(value) : value;
-    result += " ";
-  }
-  return result.trimEnd();
-}
-var Logger = class _Logger {
-  /**
-   * Backing field for the {@link Logger.level}.
-   */
-  _level;
-  /**
-   * Options that define the loggers behavior.
-   */
-  options;
-  /**
-   * Scope associated with this {@link Logger}.
-   */
-  scope;
-  /**
-   * Initializes a new instance of the {@link Logger} class.
-   * @param opts Options that define the loggers behavior.
-   */
-  constructor(opts) {
-    this.options = { minimumLevel: LogLevel.TRACE, ...opts };
-    this.scope = this.options.scope === void 0 || this.options.scope.trim() === "" ? "" : this.options.scope;
-    if (typeof this.options.level !== "function") {
-      this.setLevel(this.options.level);
-    }
-  }
-  /**
-   * Gets the {@link LogLevel}.
-   * @returns The {@link LogLevel}.
-   */
-  get level() {
-    if (this._level !== void 0) {
-      return this._level;
-    }
-    return typeof this.options.level === "function" ? this.options.level() : this.options.level;
-  }
-  /**
-   * Creates a scoped logger with the given {@link scope}; logs created by scoped-loggers include their scope to enable their source to be easily identified.
-   * @param scope Value that represents the scope of the new logger.
-   * @returns The scoped logger, or this instance when {@link scope} is not defined.
-   */
-  createScope(scope) {
-    scope = scope.trim();
-    if (scope === "") {
-      return this;
-    }
-    return new _Logger({
-      ...this.options,
-      level: () => this.level,
-      scope: this.options.scope ? `${this.options.scope}->${scope}` : scope
-    });
-  }
-  /**
-   * Writes the arguments as a debug log entry.
-   * @param data Message or data to log.
-   * @returns This instance for chaining.
-   */
-  debug(...data) {
-    return this.write({ level: LogLevel.DEBUG, data, scope: this.scope });
-  }
-  /**
-   * Writes the arguments as error log entry.
-   * @param data Message or data to log.
-   * @returns This instance for chaining.
-   */
-  error(...data) {
-    return this.write({ level: LogLevel.ERROR, data, scope: this.scope });
-  }
-  /**
-   * Writes the arguments as an info log entry.
-   * @param data Message or data to log.
-   * @returns This instance for chaining.
-   */
-  info(...data) {
-    return this.write({ level: LogLevel.INFO, data, scope: this.scope });
-  }
-  /**
-   * Sets the log-level that determines which logs should be written. The specified level will be inherited by all scoped loggers unless they have log-level explicitly defined.
-   * @param level The log-level that determines which logs should be written; when `undefined`, the level will be inherited from the parent logger, or default to the environment level.
-   * @returns This instance for chaining.
-   */
-  setLevel(level) {
-    if (level !== void 0 && level > this.options.minimumLevel) {
-      this._level = LogLevel.INFO;
-      this.warn(`Log level cannot be set to ${LogLevel[level]} whilst not in debug mode.`);
-    } else {
-      this._level = level;
-    }
-    return this;
-  }
-  /**
-   * Writes the arguments as a trace log entry.
-   * @param data Message or data to log.
-   * @returns This instance for chaining.
-   */
-  trace(...data) {
-    return this.write({ level: LogLevel.TRACE, data, scope: this.scope });
-  }
-  /**
-   * Writes the arguments as a warning log entry.
-   * @param data Message or data to log.
-   * @returns This instance for chaining.
-   */
-  warn(...data) {
-    return this.write({ level: LogLevel.WARN, data, scope: this.scope });
-  }
-  /**
-   * Writes the log entry.
-   * @param entry Log entry to write.
-   * @returns This instance for chaining.
-   */
-  write(entry) {
-    if (entry.level <= this.level) {
-      this.options.targets.forEach((t) => t.write(entry));
-    }
-    return this;
-  }
-};
-Symbol.dispose ??= /* @__PURE__ */ Symbol("Symbol.dispose");
+// node_modules/@elgato/utils/dist/explicit-resource-management/deferred.js
 function deferredDisposable(dispose) {
   let isDisposed = false;
   const guardedDispose = () => {
@@ -3945,6 +3654,8 @@ function deferredDisposable(dispose) {
     dispose: guardedDispose
   };
 }
+
+// node_modules/@elgato/utils/dist/event-emitter.js
 var EventEmitter = class {
   /**
    * Underlying collection of events and their listeners.
@@ -3957,7 +3668,7 @@ var EventEmitter = class {
    * @returns This instance with the {@link listener} added.
    */
   addListener(eventName, listener) {
-    return this.on(eventName, listener);
+    return this.add(eventName, listener, (listeners) => listeners.push({ listener }));
   }
   /**
    * Adds the event {@link listener} for the event named {@link eventName}, and returns a disposable capable of removing the event listener.
@@ -3966,7 +3677,7 @@ var EventEmitter = class {
    * @returns A disposable that removes the listener when disposed.
    */
   disposableOn(eventName, listener) {
-    this.addListener(eventName, listener);
+    this.add(eventName, listener, (listeners) => listeners.push({ listener }));
     return deferredDisposable(() => this.removeListener(eventName, listener));
   }
   /**
@@ -3983,7 +3694,7 @@ var EventEmitter = class {
     for (let i = 0; i < listeners.length; ) {
       const { listener, once } = listeners[i];
       if (once) {
-        listeners.splice(i, 1);
+        this.remove(eventName, listeners, i);
       } else {
         i++;
       }
@@ -4032,10 +3743,10 @@ var EventEmitter = class {
    * @returns This instance with the event {@link listener} removed.
    */
   off(eventName, listener) {
-    const listeners = this.events.get(eventName) || [];
+    const listeners = this.events.get(eventName) ?? [];
     for (let i = listeners.length - 1; i >= 0; i--) {
       if (listeners[i].listener === listener) {
-        listeners.splice(i, 1);
+        this.remove(eventName, listeners, i);
       }
     }
     return this;
@@ -4047,7 +3758,7 @@ var EventEmitter = class {
    * @returns This instance with the event {@link listener} added.
    */
   on(eventName, listener) {
-    return this.add(eventName, (listeners) => listeners.push({ listener }));
+    return this.add(eventName, listener, (listeners) => listeners.push({ listener }));
   }
   /**
    * Adds the **one-time** event {@link listener} for the event named {@link eventName}.
@@ -4056,7 +3767,7 @@ var EventEmitter = class {
    * @returns This instance with the event {@link listener} added.
    */
   once(eventName, listener) {
-    return this.add(eventName, (listeners) => listeners.push({ listener, once: true }));
+    return this.add(eventName, listener, (listeners) => listeners.push({ listener, once: true }));
   }
   /**
    * Adds the event {@link listener} to the beginning of the listeners for the event named {@link eventName}.
@@ -4065,7 +3776,7 @@ var EventEmitter = class {
    * @returns This instance with the event {@link listener} prepended.
    */
   prependListener(eventName, listener) {
-    return this.add(eventName, (listeners) => listeners.splice(0, 0, { listener }));
+    return this.add(eventName, listener, (listeners) => listeners.splice(0, 0, { listener }));
   }
   /**
    * Adds the **one-time** event {@link listener} to the beginning of the listeners for the event named {@link eventName}.
@@ -4074,7 +3785,7 @@ var EventEmitter = class {
    * @returns This instance with the event {@link listener} prepended.
    */
   prependOnceListener(eventName, listener) {
-    return this.add(eventName, (listeners) => listeners.splice(0, 0, { listener, once: true }));
+    return this.add(eventName, listener, (listeners) => listeners.splice(0, 0, { listener, once: true }));
   }
   /**
    * Removes all event listeners for the event named {@link eventName}.
@@ -4082,6 +3793,10 @@ var EventEmitter = class {
    * @returns This instance with the event listeners removed
    */
   removeAllListeners(eventName) {
+    const listeners = this.events.get(eventName) ?? [];
+    while (listeners.length > 0) {
+      this.remove(eventName, listeners, 0);
+    }
     this.events.delete(eventName);
     return this;
   }
@@ -4097,739 +3812,150 @@ var EventEmitter = class {
   /**
    * Adds the event {@link listener} for the event named {@link eventName}.
    * @param eventName Name of the event.
+   * @param listener Event handler function.
    * @param fn Function responsible for adding the new event handler function.
    * @returns This instance with event {@link listener} added.
    */
-  add(eventName, fn) {
+  add(eventName, listener, fn) {
     let listeners = this.events.get(eventName);
     if (listeners === void 0) {
       listeners = [];
       this.events.set(eventName, listeners);
     }
     fn(listeners);
+    if (eventName !== "newListener") {
+      const args = [eventName, listener];
+      this.emit("newListener", ...args);
+    }
     return this;
   }
+  /**
+   * Removes the listener at the given index.
+   * @param eventName Name of the event.
+   * @param listeners Listeners registered with the event.
+   * @param index Index of the listener to remove.
+   */
+  remove(eventName, listeners, index) {
+    const [{ listener }] = listeners.splice(index, 1);
+    if (eventName !== "removeListener") {
+      const args = [eventName, listener];
+      this.emit("removeListener", ...args);
+    }
+  }
 };
-function isRequest(value) {
-  return isMessage(value, "request") && has(value, "unidirectional", "boolean");
+
+// node_modules/@elgato/utils/dist/objects.js
+function freeze(value) {
+  if (value !== void 0 && value !== null && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    Object.values(value).forEach(freeze);
+  }
 }
-function isResponse(value) {
-  return isMessage(value, "response") && has(value, "status", "number");
+function get(source, path5) {
+  const props = path5.split(".");
+  return props.reduce((obj, prop) => obj && obj[prop], source);
 }
-function isMessage(value, type) {
-  if (value === void 0 || value === null || typeof value !== "object") {
-    return false;
-  }
-  if (!("__type" in value) || value.__type !== type) {
-    return false;
-  }
-  return has(value, "id", "string") && has(value, "path", "string");
-}
-function has(obj, key, type) {
-  return key in obj && typeof obj[key] === type;
-}
-var MessageResponder = class {
-  request;
-  proxy;
+
+// node_modules/@elgato/utils/dist/i18n/provider.js
+var I18nProvider = class {
   /**
-   * Indicates whether a response has already been sent in relation to the response.
+   * Backing field for the default language.
    */
-  _responded = false;
+  #language;
   /**
-   * Initializes a new instance of the {@link MessageResponder} class.
-   * @param request The request the response is associated with.
-   * @param proxy Proxy responsible for forwarding the response to the client.
+   * Map of localized resources, indexed by their language.
    */
-  constructor(request, proxy) {
-    this.request = request;
-    this.proxy = proxy;
-  }
+  #translations = /* @__PURE__ */ new Map();
   /**
-   * Indicates whether a response can be sent.
-   * @returns `true` when a response has not yet been set.
+   * Function responsible for providing localized resources for a given language.
    */
-  get canRespond() {
-    return !this._responded;
+  #readTranslations;
+  /**
+   * Internal events handler.
+   */
+  #events = new EventEmitter();
+  /**
+   * Initializes a new instance of the {@link I18nProvider} class.
+   * @param language The default language to be used when retrieving translations for a given key.
+   * @param readTranslations Function responsible for providing localized resources for a given language.
+   */
+  constructor(language, readTranslations) {
+    this.#language = language;
+    this.#readTranslations = readTranslations;
   }
   /**
-   * Sends a failure response with a status code of `500`.
-   * @param body Optional response body.
-   * @returns Promise fulfilled once the response has been sent.
+   * The default language of the provider.
+   * @returns The language.
    */
-  fail(body) {
-    return this.send(500, body);
+  get language() {
+    return this.#language;
   }
   /**
-   * Sends the {@link body} as a response with the {@link status}
-   * @param status Response status.
-   * @param body Optional response body.
-   * @returns Promise fulfilled once the response has been sent.
+   * The default language of the provider.
+   * @param value The language.
    */
-  async send(status, body) {
-    if (this.canRespond) {
-      await this.proxy({
-        __type: "response",
-        id: this.request.id,
-        path: this.request.path,
-        body,
-        status
-      });
-      this._responded = true;
+  set language(value) {
+    if (this.#language !== value) {
+      this.#language = value;
+      this.#events.emit("languageChange", value);
     }
   }
   /**
-   * Sends a success response with a status code of `200`.
-   * @param body Optional response body.
-   * @returns Promise fulfilled once the response has been sent.
+   * Adds an event listener that is called when the language within the provider changes.
+   * @param listener Listener function to be called.
+   * @returns Resource manager that, when disposed, removes the event listener.
    */
-  success(body) {
-    return this.send(200, body);
-  }
-};
-var DEFAULT_TIMEOUT = 5e3;
-var PUBLIC_PATH_PREFIX = "public:";
-var INTERNAL_PATH_PREFIX = "internal:";
-var MessageGateway = class extends EventEmitter {
-  proxy;
-  actionProvider;
-  /**
-   * Requests with pending responses.
-   */
-  requests = /* @__PURE__ */ new Map();
-  /**
-   * Registered routes, and their respective handlers.
-   */
-  routes = new EventEmitter();
-  /**
-   * Initializes a new instance of the {@link MessageGateway} class.
-   * @param proxy Proxy capable of sending messages to the plugin / property inspector.
-   * @param actionProvider Action provider responsible for retrieving actions associated with source messages.
-   */
-  constructor(proxy, actionProvider) {
-    super();
-    this.proxy = proxy;
-    this.actionProvider = actionProvider;
+  onLanguageChange(listener) {
+    return this.#events.disposableOn("languageChange", listener);
   }
   /**
-   * Sends the {@link requestOrPath} to the server; the server should be listening on {@link MessageGateway.route}.
-   * @param requestOrPath The request, or the path of the request.
-   * @param bodyOrUndefined Request body, or moot when constructing the request with {@link MessageRequestOptions}.
-   * @returns The response.
+   * Translates the specified {@link key}, as defined within the resources for the {@link language}.
+   * When the key is not found, the default language is checked. Alias of {@link I18nProvider.translate}.
+   * @param key Key of the translation.
+   * @param language Optional language to get the translation for; otherwise the default language.
+   * @returns The translation; otherwise the key.
    */
-  async fetch(requestOrPath, bodyOrUndefined) {
-    const id = crypto.randomUUID();
-    const { body, path: path2, timeout = DEFAULT_TIMEOUT, unidirectional = false } = typeof requestOrPath === "string" ? { body: bodyOrUndefined, path: requestOrPath } : requestOrPath;
-    const response = new Promise((resolve) => {
-      this.requests.set(id, (res) => {
-        if (res.status !== 408) {
-          clearTimeout(timeoutMonitor);
-        }
-        resolve(res);
-      });
-    });
-    const timeoutMonitor = setTimeout(() => this.handleResponse({ __type: "response", id, path: path2, status: 408 }), timeout);
-    const accepted = await this.proxy({
-      __type: "request",
-      body,
-      id,
-      path: path2,
-      unidirectional
-    });
-    if (!accepted) {
-      this.handleResponse({ __type: "response", id, path: path2, status: 406 });
-    }
-    return response;
+  t(key, language = this.language) {
+    return this.translate(key, language);
   }
   /**
-   * Attempts to process the specified {@link message}.
-   * @param message Message to process.
-   * @returns `true` when the {@link message} was processed by this instance; otherwise `false`.
+   * Translates the specified {@link key}, as defined within the resources for the {@link language}.
+   * When the key is not found, the default language is checked.
+   * @param key Key of the translation.
+   * @param language Optional language to get the translation for; otherwise the default language.
+   * @returns The translation; otherwise the key.
    */
-  async process(message) {
-    if (isRequest(message.payload)) {
-      const action2 = this.actionProvider(message);
-      if (await this.handleRequest(action2, message.payload)) {
-        return;
-      }
-      this.emit("unhandledRequest", message);
-    } else if (isResponse(message.payload) && this.handleResponse(message.payload)) {
-      return;
-    }
-    this.emit("unhandledMessage", message);
-  }
-  /**
-   * Maps the specified {@link path} to the {@link handler}, allowing for requests from the client.
-   * @param path Path used to identify the route.
-   * @param handler Handler to be invoked when the request is received.
-   * @param options Optional routing configuration.
-   * @returns Disposable capable of removing the route handler.
-   */
-  route(path2, handler, options) {
-    options = { filter: () => true, ...options };
-    return this.routes.disposableOn(path2, async (ev) => {
-      if (options?.filter && options.filter(ev.request.action)) {
-        await ev.routed();
-        try {
-          const result = await handler(ev.request, ev.responder);
-          if (result !== void 0) {
-            await ev.responder.send(200, result);
-          }
-        } catch (err) {
-          await ev.responder.send(500);
-          throw err;
-        }
-      }
-    });
-  }
-  /**
-   * Handles inbound requests.
-   * @param action Action associated with the request.
-   * @param source The request.
-   * @returns `true` when the request was handled; otherwise `false`.
-   */
-  async handleRequest(action2, source) {
-    const responder = new MessageResponder(source, this.proxy);
-    const request = {
-      action: action2,
-      path: source.path,
-      unidirectional: source.unidirectional,
-      body: source.body
-    };
-    let routed = false;
-    const routes = this.routes.listeners(source.path);
-    for (const route of routes) {
-      await route({
-        request,
-        responder,
-        routed: async () => {
-          if (request.unidirectional) {
-            await responder.send(202);
-          }
-          routed = true;
-        }
-      });
-    }
-    if (routed) {
-      await responder.send(200);
-      return true;
-    }
-    await responder.send(501);
-    return false;
-  }
-  /**
-   * Handles inbound response.
-   * @param res The response.
-   * @returns `true` when the response was handled; otherwise `false`.
-   */
-  handleResponse(res) {
-    const handler = this.requests.get(res.id);
-    this.requests.delete(res.id);
-    if (handler) {
-      handler(new MessageResponse(res));
-      return true;
-    }
-    return false;
-  }
-};
-var MessageResponse = class {
-  /**
-   * Body of the response.
-   */
-  body;
-  /**
-   * Status of the response.
-   * - `200` the request was successful.
-   * - `202` the request was unidirectional, and does not have a response.
-   * - `406` the request could not be accepted by the server.
-   * - `408` the request timed-out.
-   * - `500` the request failed.
-   * - `501` the request is not implemented by the server, and could not be fulfilled.
-   */
-  status;
-  /**
-   * Initializes a new instance of the {@link MessageResponse} class.
-   * @param res The status code, or the response.
-   */
-  constructor(res) {
-    this.body = res.body;
-    this.status = res.status;
-  }
-  /**
-   * Indicates whether the request was successful.
-   * @returns `true` when the status indicates a success; otherwise `false`.
-   */
-  get ok() {
-    return this.status >= 200 && this.status < 300;
-  }
-};
-var LOGGER_WRITE_PATH = `${INTERNAL_PATH_PREFIX}logger.write`;
-function registerCreateLogEntryRoute(router2, logger3) {
-  router2.route(LOGGER_WRITE_PATH, (req, res) => {
-    if (req.body === void 0) {
-      return res.fail();
-    }
-    const { level, message, scope } = req.body;
-    if (level === void 0) {
-      return res.fail();
-    }
-    logger3.write({ level, data: [message], scope });
-    return res.success();
-  });
-}
-var Event = class {
-  /**
-   * Event that occurred.
-   */
-  type;
-  /**
-   * Initializes a new instance of the {@link Event} class.
-   * @param source Source of the event, i.e. the original message from Stream Deck.
-   */
-  constructor(source) {
-    this.type = source.event;
-  }
-};
-var ActionWithoutPayloadEvent = class extends Event {
-  action;
-  /**
-   * Initializes a new instance of the {@link ActionWithoutPayloadEvent} class.
-   * @param action Action that raised the event.
-   * @param source Source of the event, i.e. the original message from Stream Deck.
-   */
-  constructor(action2, source) {
-    super(source);
-    this.action = action2;
-  }
-};
-var ActionEvent = class extends ActionWithoutPayloadEvent {
-  /**
-   * Provides additional information about the event that occurred, e.g. how many `ticks` the dial was rotated, the current `state` of the action, etc.
-   */
-  payload;
-  /**
-   * Initializes a new instance of the {@link ActionEvent} class.
-   * @param action Action that raised the event.
-   * @param source Source of the event, i.e. the original message from Stream Deck.
-   */
-  constructor(action2, source) {
-    super(action2, source);
-    this.payload = source.payload;
-  }
-};
-var DidReceiveGlobalSettingsEvent = class extends Event {
-  /**
-   * Settings associated with the event.
-   */
-  settings;
-  /**
-   * Initializes a new instance of the {@link DidReceiveGlobalSettingsEvent} class.
-   * @param source Source of the event, i.e. the original message from Stream Deck.
-   */
-  constructor(source) {
-    super(source);
-    this.settings = source.payload.settings;
-  }
-};
-var Lazy = class {
-  /**
-   * Private backing field for {@link Lazy.value}.
-   */
-  #value = void 0;
-  /**
-   * Factory responsible for instantiating the value.
-   */
-  #valueFactory;
-  /**
-   * Initializes a new instance of the {@link Lazy} class.
-   * @param valueFactory The factory responsible for instantiating the value.
-   */
-  constructor(valueFactory) {
-    this.#valueFactory = valueFactory;
-  }
-  /**
-   * Gets the value.
-   * @returns The value.
-   */
-  get value() {
-    if (this.#value === void 0) {
-      this.#value = this.#valueFactory();
-    }
-    return this.#value;
-  }
-};
-var PromiseCompletionSource = class {
-  /**
-   * The underlying promise that this instance is managing.
-   */
-  _promise;
-  /**
-   * Delegate used to reject the promise.
-   */
-  _reject;
-  /**
-   * Delegate used to resolve the promise.
-   */
-  _resolve;
-  /**
-   * Wraps an underlying Promise{T}, exposing the resolve and reject delegates as methods, allowing for it to be awaited, resolved, or rejected externally.
-   */
-  constructor() {
-    this._promise = new Promise((resolve, reject) => {
-      this._resolve = resolve;
-      this._reject = reject;
-    });
-  }
-  /**
-   * Gets the underlying promise being managed by this instance.
-   * @returns The promise.
-   */
-  get promise() {
-    return this._promise;
-  }
-  /**
-   * Rejects the promise, causing any awaited calls to throw.
-   * @param reason The reason for rejecting the promise.
-   */
-  setException(reason) {
-    if (this._reject) {
-      this._reject(reason);
-    }
-  }
-  /**
-   * Sets the result of the underlying promise, allowing any awaited calls to continue invocation.
-   * @param value The value to resolve the promise with.
-   */
-  setResult(value) {
-    if (this._resolve) {
-      this._resolve(value);
-    }
-  }
-};
-var Version = class {
-  /**
-   * Build version number.
-   */
-  build;
-  /**
-   * Major version number.
-   */
-  major;
-  /**
-   * Minor version number.
-   */
-  minor;
-  /**
-   * Patch version number.
-   */
-  patch;
-  /**
-   * Initializes a new instance of the {@link Version} class.
-   * @param value Value to parse the version from.
-   */
-  constructor(value) {
-    const result = value.match(/^(0|[1-9]\d*)(?:\.(0|[1-9]\d*))?(?:\.(0|[1-9]\d*))?(?:\.(0|[1-9]\d*))?$/);
-    if (result === null) {
-      throw new Error(`Invalid format; expected "{major}[.{minor}[.{patch}[.{build}]]]" but was "${value}"`);
-    }
-    [, this.major, this.minor, this.patch, this.build] = [...result.map((value2) => parseInt(value2) || 0)];
-  }
-  /**
-   * Compares this instance to the {@link other} {@link Version}.
-   * @param other The {@link Version} to compare to.
-   * @returns `-1` when this instance is less than the {@link other}, `1` when this instance is greater than {@link other}, otherwise `0`.
-   */
-  compareTo(other) {
-    const segments = ({ major, minor, build, patch }) => [major, minor, build, patch];
-    const thisSegments = segments(this);
-    const otherSegments = segments(other);
-    for (let i = 0; i < 4; i++) {
-      if (thisSegments[i] < otherSegments[i]) {
-        return -1;
-      } else if (thisSegments[i] > otherSegments[i]) {
-        return 1;
+  translate(key, language = this.language) {
+    const languages = /* @__PURE__ */ new Set([
+      language,
+      language.replaceAll("_", "-").split("-").at(0),
+      defaultLanguage
+    ]);
+    for (const language2 of languages) {
+      const resource = get(this.getTranslations(language2), key);
+      if (resource) {
+        return resource.toString();
       }
     }
-    return 0;
+    return key;
   }
-  /** @inheritdoc */
-  toString() {
-    return `${this.major}.${this.minor}`;
+  /**
+   * Gets the translations for the specified language.
+   * @param language Language whose translations are being retrieved.
+   * @returns The translations; otherwise `null`.
+   */
+  getTranslations(language) {
+    let translations = this.#translations.get(language);
+    if (translations === void 0) {
+      translations = this.#readTranslations(language);
+      freeze(translations);
+      this.#translations.set(language, translations);
+    }
+    return translations;
   }
 };
-var __isDebugMode = void 0;
-function isDebugMode() {
-  if (__isDebugMode === void 0) {
-    __isDebugMode = process.execArgv.some((arg) => {
-      const name = arg.split("=")[0];
-      return name === "--inspect" || name === "--inspect-brk" || name === "--inspect-port";
-    });
-  }
-  return __isDebugMode;
-}
-function getPluginUUID() {
-  const name = import_node_path.default.basename(process.cwd());
-  const suffixIndex = name.lastIndexOf(".sdPlugin");
-  return suffixIndex < 0 ? name : name.substring(0, suffixIndex);
-}
-var FileTarget = class {
-  options;
-  /**
-   * File path where logs will be written.
-   */
-  filePath;
-  /**
-   * Current size of the logs that have been written to the {@link FileTarget.filePath}.
-   */
-  size = 0;
-  /**
-   * Initializes a new instance of the {@link FileTarget} class.
-   * @param options Options that defines how logs should be written to the local file system.
-   */
-  constructor(options) {
-    this.options = options;
-    this.filePath = this.getLogFilePath();
-    this.reIndex();
-  }
-  /**
-   * @inheritdoc
-   */
-  write(entry) {
-    const fd = import_node_fs.default.openSync(this.filePath, "a");
-    try {
-      const msg = this.options.format(entry);
-      import_node_fs.default.writeSync(fd, msg + "\n");
-      this.size += msg.length;
-    } finally {
-      import_node_fs.default.closeSync(fd);
-    }
-    if (this.size >= this.options.maxSize) {
-      this.reIndex();
-      this.size = 0;
-    }
-  }
-  /**
-   * Gets the file path to an indexed log file.
-   * @param index Optional index of the log file to be included as part of the file name.
-   * @returns File path that represents the indexed log file.
-   */
-  getLogFilePath(index = 0) {
-    return import_node_path.default.join(this.options.dest, `${this.options.fileName}.${index}.log`);
-  }
-  /**
-   * Gets the log files associated with this file target, including past and present.
-   * @returns Log file entries.
-   */
-  getLogFiles() {
-    const regex = /^\.(\d+)\.log$/;
-    return import_node_fs.default.readdirSync(this.options.dest, { withFileTypes: true }).reduce((prev, entry) => {
-      if (entry.isDirectory() || entry.name.indexOf(this.options.fileName) < 0) {
-        return prev;
-      }
-      const match = entry.name.substring(this.options.fileName.length).match(regex);
-      if (match?.length !== 2) {
-        return prev;
-      }
-      prev.push({
-        path: import_node_path.default.join(this.options.dest, entry.name),
-        index: parseInt(match[1])
-      });
-      return prev;
-    }, []).sort(({ index: a }, { index: b }) => {
-      return a < b ? -1 : a > b ? 1 : 0;
-    });
-  }
-  /**
-   * Re-indexes the existing log files associated with this file target, removing old log files whose index exceeds the {@link FileTargetOptions.maxFileCount}, and renaming the
-   * remaining log files, leaving index "0" free for a new log file.
-   */
-  reIndex() {
-    if (!import_node_fs.default.existsSync(this.options.dest)) {
-      import_node_fs.default.mkdirSync(this.options.dest);
-      return;
-    }
-    const logFiles = this.getLogFiles();
-    for (let i = logFiles.length - 1; i >= 0; i--) {
-      const log = logFiles[i];
-      if (i >= this.options.maxFileCount - 1) {
-        import_node_fs.default.rmSync(log.path);
-      } else {
-        import_node_fs.default.renameSync(log.path, this.getLogFilePath(i + 1));
-      }
-    }
-  }
-};
-var fileTarget = new FileTarget({
-  dest: import_node_path.default.join((0, import_node_process.cwd)(), "logs"),
-  fileName: getPluginUUID(),
-  format: stringFormatter(),
-  maxFileCount: 10,
-  maxSize: 50 * 1024 * 1024
-});
-var targets = [fileTarget];
-if (isDebugMode()) {
-  targets.splice(0, 0, new ConsoleTarget());
-}
-var logger = new Logger({
-  level: isDebugMode() ? LogLevel.DEBUG : LogLevel.INFO,
-  minimumLevel: isDebugMode() ? LogLevel.TRACE : LogLevel.DEBUG,
-  targets
-});
-process.once("uncaughtException", (err) => logger.error("Process encountered uncaught exception", err));
-var Connection = class extends EventEmitter {
-  /**
-   * Private backing field for {@link Connection.registrationParameters}.
-   */
-  _registrationParameters;
-  /**
-   * Private backing field for {@link Connection.version}.
-   */
-  _version;
-  /**
-   * Used to ensure {@link Connection.connect} is invoked as a singleton; `false` when a connection is occurring or established.
-   */
-  canConnect = true;
-  /**
-   * Underlying web socket connection.
-   */
-  connection = new PromiseCompletionSource();
-  /**
-   * Logger scoped to the connection.
-   */
-  logger = logger.createScope("Connection");
-  /**
-   * Underlying connection information provided to the plugin to establish a connection with Stream Deck.
-   * @returns The registration parameters.
-   */
-  get registrationParameters() {
-    return this._registrationParameters ??= this.getRegistrationParameters();
-  }
-  /**
-   * Version of Stream Deck this instance is connected to.
-   * @returns The version.
-   */
-  get version() {
-    return this._version ??= new Version(this.registrationParameters.info.application.version);
-  }
-  /**
-   * Establishes a connection with the Stream Deck, allowing for the plugin to send and receive messages.
-   * @returns A promise that is resolved when a connection has been established.
-   */
-  async connect() {
-    if (this.canConnect) {
-      this.canConnect = false;
-      const webSocket = new wrapper_default(`ws://127.0.0.1:${this.registrationParameters.port}`);
-      webSocket.onmessage = (ev) => this.tryEmit(ev);
-      webSocket.onopen = () => {
-        webSocket.send(JSON.stringify({
-          event: this.registrationParameters.registerEvent,
-          uuid: this.registrationParameters.pluginUUID
-        }));
-        this.connection.setResult(webSocket);
-        this.emit("connected", this.registrationParameters.info);
-      };
-    }
-    await this.connection.promise;
-  }
-  /**
-   * Sends the commands to the Stream Deck, once the connection has been established and registered.
-   * @param command Command being sent.
-   * @returns `Promise` resolved when the command is sent to Stream Deck.
-   */
-  async send(command) {
-    const connection2 = await this.connection.promise;
-    const message = JSON.stringify(command);
-    this.logger.trace(message);
-    connection2.send(message);
-  }
-  /**
-   * Gets the registration parameters, provided by Stream Deck, that provide information to the plugin, including how to establish a connection.
-   * @returns Parsed registration parameters.
-   */
-  getRegistrationParameters() {
-    const params = {
-      port: void 0,
-      info: void 0,
-      pluginUUID: void 0,
-      registerEvent: void 0
-    };
-    const scopedLogger = logger.createScope("RegistrationParameters");
-    for (let i = 0; i < process.argv.length - 1; i++) {
-      const param = process.argv[i];
-      const value = process.argv[++i];
-      switch (param) {
-        case RegistrationParameter.Port:
-          scopedLogger.debug(`port=${value}`);
-          params.port = value;
-          break;
-        case RegistrationParameter.PluginUUID:
-          scopedLogger.debug(`pluginUUID=${value}`);
-          params.pluginUUID = value;
-          break;
-        case RegistrationParameter.RegisterEvent:
-          scopedLogger.debug(`registerEvent=${value}`);
-          params.registerEvent = value;
-          break;
-        case RegistrationParameter.Info:
-          scopedLogger.debug(`info=${value}`);
-          params.info = JSON.parse(value);
-          break;
-        default:
-          i--;
-          break;
-      }
-    }
-    const invalidArgs = [];
-    const validate = (name, value) => {
-      if (value === void 0) {
-        invalidArgs.push(name);
-      }
-    };
-    validate(RegistrationParameter.Port, params.port);
-    validate(RegistrationParameter.PluginUUID, params.pluginUUID);
-    validate(RegistrationParameter.RegisterEvent, params.registerEvent);
-    validate(RegistrationParameter.Info, params.info);
-    if (invalidArgs.length > 0) {
-      throw new Error(`Unable to establish a connection with Stream Deck, missing command line arguments: ${invalidArgs.join(", ")}`);
-    }
-    return params;
-  }
-  /**
-   * Attempts to emit the {@link ev} that was received from the {@link Connection.connection}.
-   * @param ev Event message data received from Stream Deck.
-   */
-  tryEmit(ev) {
-    try {
-      const message = JSON.parse(ev.data.toString());
-      if (message.event) {
-        this.logger.trace(ev.data.toString());
-        this.emit(message.event, message);
-      } else {
-        this.logger.warn(`Received unknown message: ${ev.data}`);
-      }
-    } catch (err) {
-      this.logger.error(`Failed to parse message: ${ev.data}`, err);
-    }
-  }
-};
-var connection = new Connection();
-var manifest$1;
-var softwareMinimumVersion;
-function getSoftwareMinimumVersion() {
-  return softwareMinimumVersion ??= new Version(getManifest().Software.MinimumVersion);
-}
-function getManifest() {
-  return manifest$1 ??= readManifest();
-}
-function readManifest() {
-  const path2 = (0, import_node_path.join)(process.cwd(), "manifest.json");
-  if (!(0, import_node_fs.existsSync)(path2)) {
-    throw new Error("Failed to read manifest.json as the file does not exist.");
-  }
-  return JSON.parse((0, import_node_fs.readFileSync)(path2, {
-    encoding: "utf-8",
-    flag: "r"
-  }).toString());
-}
+
+// node_modules/@elgato/utils/dist/enumerable.js
 var Enumerable = class _Enumerable {
   /**
    * Backing function responsible for providing the iterator of items.
@@ -5120,13 +4246,707 @@ var Enumerable = class _Enumerable {
     return `${this.toArray()}`;
   }
 };
-var __items$1 = /* @__PURE__ */ new Map();
+
+// node_modules/@elgato/utils/dist/explicit-resource-management/index.js
+Symbol.dispose ??= /* @__PURE__ */ Symbol("Symbol.dispose");
+
+// node_modules/@elgato/utils/dist/lazy.js
+var Lazy = class {
+  /**
+   * Private backing field for {@link Lazy.value}.
+   */
+  #value = void 0;
+  /**
+   * Factory responsible for instantiating the value.
+   */
+  #valueFactory;
+  /**
+   * Initializes a new instance of the {@link Lazy} class.
+   * @param valueFactory The factory responsible for instantiating the value.
+   */
+  constructor(valueFactory) {
+    this.#valueFactory = valueFactory;
+  }
+  /**
+   * Gets the value.
+   * @returns The value.
+   */
+  get value() {
+    if (this.#value === void 0) {
+      this.#value = this.#valueFactory();
+    }
+    return this.#value;
+  }
+};
+
+// node_modules/@elgato/utils/dist/promises.js
+function withResolvers() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
+// node_modules/ws/wrapper.mjs
+var import_stream = __toESM(require_stream(), 1);
+var import_receiver = __toESM(require_receiver(), 1);
+var import_sender = __toESM(require_sender(), 1);
+var import_websocket = __toESM(require_websocket(), 1);
+var import_websocket_server = __toESM(require_websocket_server(), 1);
+var wrapper_default = import_websocket.default;
+
+// node_modules/@elgato/schemas/dist/streamdeck/plugins/index.mjs
+var DeviceType;
+(function(DeviceType2) {
+  DeviceType2[DeviceType2["StreamDeck"] = 0] = "StreamDeck";
+  DeviceType2[DeviceType2["StreamDeckMini"] = 1] = "StreamDeckMini";
+  DeviceType2[DeviceType2["StreamDeckXL"] = 2] = "StreamDeckXL";
+  DeviceType2[DeviceType2["StreamDeckMobile"] = 3] = "StreamDeckMobile";
+  DeviceType2[DeviceType2["CorsairGKeys"] = 4] = "CorsairGKeys";
+  DeviceType2[DeviceType2["StreamDeckPedal"] = 5] = "StreamDeckPedal";
+  DeviceType2[DeviceType2["CorsairVoyager"] = 6] = "CorsairVoyager";
+  DeviceType2[DeviceType2["StreamDeckPlus"] = 7] = "StreamDeckPlus";
+  DeviceType2[DeviceType2["SCUFController"] = 8] = "SCUFController";
+  DeviceType2[DeviceType2["StreamDeckNeo"] = 9] = "StreamDeckNeo";
+  DeviceType2[DeviceType2["StreamDeckStudio"] = 10] = "StreamDeckStudio";
+  DeviceType2[DeviceType2["VirtualStreamDeck"] = 11] = "VirtualStreamDeck";
+})(DeviceType || (DeviceType = {}));
+var BarSubType;
+(function(BarSubType2) {
+  BarSubType2[BarSubType2["Rectangle"] = 0] = "Rectangle";
+  BarSubType2[BarSubType2["DoubleRectangle"] = 1] = "DoubleRectangle";
+  BarSubType2[BarSubType2["Trapezoid"] = 2] = "Trapezoid";
+  BarSubType2[BarSubType2["DoubleTrapezoid"] = 3] = "DoubleTrapezoid";
+  BarSubType2[BarSubType2["Groove"] = 4] = "Groove";
+})(BarSubType || (BarSubType = {}));
+
+// node_modules/@elgato/streamdeck/dist/api/registration/parameters.js
+var RegistrationParameter;
+(function(RegistrationParameter2) {
+  RegistrationParameter2["Port"] = "-port";
+  RegistrationParameter2["Info"] = "-info";
+  RegistrationParameter2["PluginUUID"] = "-pluginUUID";
+  RegistrationParameter2["RegisterEvent"] = "-registerEvent";
+})(RegistrationParameter || (RegistrationParameter = {}));
+
+// node_modules/@elgato/streamdeck/dist/api/target.js
+var Target;
+(function(Target2) {
+  Target2[Target2["HardwareAndSoftware"] = 0] = "HardwareAndSoftware";
+  Target2[Target2["Hardware"] = 1] = "Hardware";
+  Target2[Target2["Software"] = 2] = "Software";
+})(Target || (Target = {}));
+
+// node_modules/@elgato/streamdeck/dist/plugin/common/version.js
+var Version = class {
+  /**
+   * Build version number.
+   */
+  build;
+  /**
+   * Major version number.
+   */
+  major;
+  /**
+   * Minor version number.
+   */
+  minor;
+  /**
+   * Patch version number.
+   */
+  patch;
+  /**
+   * Initializes a new instance of the {@link Version} class.
+   * @param value Value to parse the version from.
+   */
+  constructor(value) {
+    const result = value.match(/^(0|[1-9]\d*)(?:\.(0|[1-9]\d*))?(?:\.(0|[1-9]\d*))?(?:\.(0|[1-9]\d*))?$/);
+    if (result === null) {
+      throw new Error(`Invalid format; expected "{major}[.{minor}[.{patch}[.{build}]]]" but was "${value}"`);
+    }
+    [, this.major, this.minor, this.patch, this.build] = [...result.map((value2) => parseInt(value2) || 0)];
+  }
+  /**
+   * Compares this instance to the {@link other} {@link Version}.
+   * @param other The {@link Version} to compare to.
+   * @returns `-1` when this instance is less than the {@link other}, `1` when this instance is greater than {@link other}, otherwise `0`.
+   */
+  compareTo(other) {
+    const segments = ({ major, minor, build, patch }) => [major, minor, build, patch];
+    const thisSegments = segments(this);
+    const otherSegments = segments(other);
+    for (let i = 0; i < 4; i++) {
+      if (thisSegments[i] < otherSegments[i]) {
+        return -1;
+      } else if (thisSegments[i] > otherSegments[i]) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+  /** @inheritdoc */
+  toString() {
+    return `${this.major}.${this.minor}`;
+  }
+};
+
+// node_modules/@elgato/utils/dist/logging/console-target.js
+var ConsoleTarget = class {
+  /**
+   * @inheritdoc
+   */
+  write(entry) {
+    switch (entry.level) {
+      case "error":
+        console.error(...entry.data);
+        break;
+      case "warn":
+        console.warn(...entry.data);
+        break;
+      default:
+        console.log(...entry.data);
+    }
+  }
+};
+
+// node_modules/@elgato/utils/dist/logging/format.js
+var EOL = "\n";
+function stringFormatter(opts) {
+  if (opts?.dataOnly) {
+    return ({ data }) => `${reduce(data)}`;
+  } else {
+    return (entry) => {
+      const { data, level, scope } = entry;
+      let prefix = `${(/* @__PURE__ */ new Date()).toISOString()} ${level.toUpperCase().padEnd(5)} `;
+      if (scope) {
+        prefix += `${scope}: `;
+      }
+      return `${prefix}${reduce(data)}`;
+    };
+  }
+}
+function reduce(data) {
+  let result = "";
+  let previousWasError = false;
+  for (const value of data) {
+    if (typeof value === "object" && value instanceof Error) {
+      result += `${EOL}${value.stack}`;
+      previousWasError = true;
+      continue;
+    }
+    if (previousWasError) {
+      result += EOL;
+      previousWasError = false;
+    }
+    result += typeof value === "object" ? JSON.stringify(value) : value;
+    result += " ";
+  }
+  return result.trimEnd();
+}
+
+// node_modules/@elgato/utils/dist/logging/level.js
+function defcon(level) {
+  switch (level) {
+    case "error":
+      return 0;
+    case "warn":
+      return 1;
+    case "info":
+      return 2;
+    case "debug":
+      return 3;
+    case "trace":
+    default:
+      return 4;
+  }
+}
+
+// node_modules/@elgato/utils/dist/logging/logger.js
+var Logger = class _Logger {
+  /**
+   * Backing field for the {@link Logger.level}.
+   */
+  #level;
+  /**
+   * Options that define the loggers behavior.
+   */
+  #options;
+  /**
+   * Scope associated with this {@link Logger}.
+   */
+  #scope;
+  /**
+   * Initializes a new instance of the {@link Logger} class.
+   * @param opts Options that define the loggers behavior.
+   */
+  constructor(opts) {
+    this.#options = { minimumLevel: "trace", ...opts };
+    this.#scope = this.#options.scope === void 0 || this.#options.scope.trim() === "" ? "" : this.#options.scope;
+    if (typeof this.#options.level !== "function") {
+      this.setLevel(this.#options.level);
+    }
+  }
+  /**
+   * Gets the {@link LogLevel}.
+   * @returns The {@link LogLevel}.
+   */
+  get level() {
+    if (this.#level !== void 0) {
+      return this.#level;
+    }
+    return typeof this.#options.level === "function" ? this.#options.level() : this.#options.level;
+  }
+  /**
+   * Creates a scoped logger with the given {@link scope}; logs created by scoped-loggers include their scope to enable their source to be easily identified.
+   * @param scope Value that represents the scope of the new logger.
+   * @returns The scoped logger, or this instance when {@link scope} is not defined.
+   */
+  createScope(scope) {
+    scope = scope.trim();
+    if (scope === "") {
+      return this;
+    }
+    return new _Logger({
+      ...this.#options,
+      level: () => this.level,
+      scope: this.#options.scope ? `${this.#options.scope}->${scope}` : scope
+    });
+  }
+  /**
+   * Writes the arguments as a debug log entry.
+   * @param data Message or data to log.
+   * @returns This instance for chaining.
+   */
+  debug(...data) {
+    return this.write({ level: "debug", data, scope: this.#scope });
+  }
+  /**
+   * Writes the arguments as error log entry.
+   * @param data Message or data to log.
+   * @returns This instance for chaining.
+   */
+  error(...data) {
+    return this.write({ level: "error", data, scope: this.#scope });
+  }
+  /**
+   * Writes the arguments as an info log entry.
+   * @param data Message or data to log.
+   * @returns This instance for chaining.
+   */
+  info(...data) {
+    return this.write({ level: "info", data, scope: this.#scope });
+  }
+  /**
+   * Sets the log-level that determines which logs should be written. The specified level will be inherited by all scoped loggers unless they have log-level explicitly defined.
+   * @param level The log-level that determines which logs should be written; when `undefined`, the level will be inherited from the parent logger, or default to the environment level.
+   * @returns This instance for chaining.
+   */
+  setLevel(level) {
+    if (level !== void 0 && defcon(level) > defcon(this.#options.minimumLevel)) {
+      this.#level = "info";
+    } else {
+      this.#level = level;
+    }
+    return this;
+  }
+  /**
+   * Writes the arguments as a trace log entry.
+   * @param data Message or data to log.
+   * @returns This instance for chaining.
+   */
+  trace(...data) {
+    return this.write({ level: "trace", data, scope: this.#scope });
+  }
+  /**
+   * Writes the arguments as a warning log entry.
+   * @param data Message or data to log.
+   * @returns This instance for chaining.
+   */
+  warn(...data) {
+    return this.write({ level: "warn", data, scope: this.#scope });
+  }
+  /**
+   * Writes the log entry.
+   * @param entry Log entry to write.
+   * @returns This instance for chaining.
+   */
+  write(entry) {
+    if (defcon(entry.level) <= defcon(this.level)) {
+      this.#options.targets.forEach((t) => t.write(entry));
+    }
+    return this;
+  }
+};
+
+// node_modules/@elgato/utils/dist/logging/node/file-target.js
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = __toESM(require("node:path"), 1);
+var FileTarget = class {
+  /**
+   * File path where logs will be written.
+   */
+  #filePath;
+  /**
+   * Options that defines how logs should be written to the local file system.
+   */
+  #options;
+  /**
+   * Current size of the logs that have been written to the {@link FileTarget.#filePath}.
+   */
+  #size = 0;
+  /**
+   * Initializes a new instance of the {@link FileTarget} class.
+   * @param options Options that defines how logs should be written to the local file system.
+   */
+  constructor(options) {
+    this.#options = options;
+    this.#filePath = this.getLogFilePath();
+    this.reIndex();
+  }
+  /**
+   * @inheritdoc
+   */
+  write(entry) {
+    const fd = import_node_fs.default.openSync(this.#filePath, "a");
+    try {
+      const msg = this.#options.format(entry);
+      import_node_fs.default.writeSync(fd, msg + "\n");
+      this.#size += msg.length;
+    } finally {
+      import_node_fs.default.closeSync(fd);
+    }
+    if (this.#size >= this.#options.maxSize) {
+      this.reIndex();
+      this.#size = 0;
+    }
+  }
+  /**
+   * Gets the file path to an indexed log file.
+   * @param index Optional index of the log file to be included as part of the file name.
+   * @returns File path that represents the indexed log file.
+   */
+  getLogFilePath(index = 0) {
+    return import_node_path.default.join(this.#options.dest, `${this.#options.fileName}.${index}.log`);
+  }
+  /**
+   * Gets the log files associated with this file target, including past and present.
+   * @returns Log file entries.
+   */
+  getLogFiles() {
+    const regex = /^\.(\d+)\.log$/;
+    return import_node_fs.default.readdirSync(this.#options.dest, { withFileTypes: true }).reduce((prev, entry) => {
+      if (entry.isDirectory() || entry.name.indexOf(this.#options.fileName) < 0) {
+        return prev;
+      }
+      const match = entry.name.substring(this.#options.fileName.length).match(regex);
+      if (match?.length !== 2) {
+        return prev;
+      }
+      prev.push({
+        path: import_node_path.default.join(this.#options.dest, entry.name),
+        index: parseInt(match[1])
+      });
+      return prev;
+    }, []).sort(({ index: a }, { index: b }) => {
+      return a < b ? -1 : a > b ? 1 : 0;
+    });
+  }
+  /**
+   * Re-indexes the existing log files associated with this file target, removing old log files whose index exceeds the {@link FileTargetOptions.maxFileCount}, and renaming the
+   * remaining log files, leaving index "0" free for a new log file.
+   */
+  reIndex() {
+    if (!import_node_fs.default.existsSync(this.#options.dest)) {
+      import_node_fs.default.mkdirSync(this.#options.dest);
+      return;
+    }
+    const logFiles = this.getLogFiles();
+    for (let i = logFiles.length - 1; i >= 0; i--) {
+      const log = logFiles[i];
+      if (i >= this.#options.maxFileCount - 1) {
+        import_node_fs.default.rmSync(log.path);
+      } else {
+        import_node_fs.default.renameSync(log.path, this.getLogFilePath(i + 1));
+      }
+    }
+  }
+};
+
+// node_modules/@elgato/streamdeck/dist/plugin/logging/index.js
+var import_node_path3 = __toESM(require("node:path"), 1);
+var import_node_process = require("node:process");
+
+// node_modules/@elgato/streamdeck/dist/plugin/common/utils.js
+var import_node_path2 = __toESM(require("node:path"), 1);
+var __isDebugMode = void 0;
+function isDebugMode() {
+  if (__isDebugMode === void 0) {
+    __isDebugMode = process.execArgv.some((arg) => {
+      const name = arg.split("=")[0];
+      return name === "--inspect" || name === "--inspect-brk" || name === "--inspect-port";
+    });
+  }
+  return __isDebugMode;
+}
+function getPluginUUID() {
+  const name = import_node_path2.default.basename(process.cwd());
+  const suffixIndex = name.lastIndexOf(".sdPlugin");
+  return suffixIndex < 0 ? name : name.substring(0, suffixIndex);
+}
+
+// node_modules/@elgato/streamdeck/dist/plugin/logging/index.js
+var fileTarget = new FileTarget({
+  dest: import_node_path3.default.join((0, import_node_process.cwd)(), "logs"),
+  fileName: getPluginUUID(),
+  format: stringFormatter(),
+  maxFileCount: 10,
+  maxSize: 50 * 1024 * 1024
+});
+var targets = [fileTarget];
+if (isDebugMode()) {
+  targets.splice(0, 0, new ConsoleTarget());
+}
+var logger = new Logger({
+  level: isDebugMode() ? "debug" : "info",
+  minimumLevel: isDebugMode() ? "trace" : "debug",
+  targets
+});
+process.once("uncaughtException", (err) => logger.error("Process encountered uncaught exception", err));
+
+// node_modules/@elgato/streamdeck/dist/plugin/connection.js
+var Connection = class extends EventEmitter {
+  /**
+   * Private backing field for {@link Connection.registrationParameters}.
+   */
+  _registrationParameters;
+  /**
+   * Private backing field for {@link Connection.version}.
+   */
+  _version;
+  /**
+   * Used to ensure {@link Connection.connect} is invoked as a singleton; `false` when a connection is occurring or established.
+   */
+  canConnect = true;
+  /**
+   * Underlying web socket connection.
+   */
+  connection = withResolvers();
+  /**
+   * Logger scoped to the connection.
+   */
+  logger = logger.createScope("Connection");
+  /**
+   * Underlying connection information provided to the plugin to establish a connection with Stream Deck.
+   * @returns The registration parameters.
+   */
+  get registrationParameters() {
+    return this._registrationParameters ??= this.getRegistrationParameters();
+  }
+  /**
+   * Version of Stream Deck this instance is connected to.
+   * @returns The version.
+   */
+  get version() {
+    return this._version ??= new Version(this.registrationParameters.info.application.version);
+  }
+  /**
+   * Establishes a connection with the Stream Deck, allowing for the plugin to send and receive messages.
+   * @returns A promise that is resolved when a connection has been established.
+   */
+  async connect() {
+    if (this.canConnect) {
+      this.canConnect = false;
+      const webSocket = new wrapper_default(`ws://127.0.0.1:${this.registrationParameters.port}`);
+      webSocket.onmessage = (ev) => this.tryEmit(ev);
+      webSocket.onopen = () => {
+        webSocket.send(JSON.stringify({
+          event: this.registrationParameters.registerEvent,
+          uuid: this.registrationParameters.pluginUUID
+        }));
+        this.connection.resolve(webSocket);
+        this.emit("connected", this.registrationParameters.info);
+      };
+    }
+    await this.connection.promise;
+  }
+  /**
+   * Sends the commands to the Stream Deck, once the connection has been established and registered.
+   * @param command Command being sent.
+   * @returns `Promise` resolved when the command is sent to Stream Deck.
+   */
+  async send(command) {
+    const connection2 = await this.connection.promise;
+    const message = JSON.stringify(command);
+    this.logger.trace(message);
+    connection2.send(message);
+  }
+  /**
+   * Gets the registration parameters, provided by Stream Deck, that provide information to the plugin, including how to establish a connection.
+   * @returns Parsed registration parameters.
+   */
+  getRegistrationParameters() {
+    const params = {
+      port: void 0,
+      info: void 0,
+      pluginUUID: void 0,
+      registerEvent: void 0
+    };
+    const scopedLogger = logger.createScope("RegistrationParameters");
+    for (let i = 0; i < process.argv.length - 1; i++) {
+      const param = process.argv[i];
+      const value = process.argv[++i];
+      switch (param) {
+        case RegistrationParameter.Port:
+          scopedLogger.debug(`port=${value}`);
+          params.port = value;
+          break;
+        case RegistrationParameter.PluginUUID:
+          scopedLogger.debug(`pluginUUID=${value}`);
+          params.pluginUUID = value;
+          break;
+        case RegistrationParameter.RegisterEvent:
+          scopedLogger.debug(`registerEvent=${value}`);
+          params.registerEvent = value;
+          break;
+        case RegistrationParameter.Info:
+          scopedLogger.debug(`info=${value}`);
+          params.info = JSON.parse(value);
+          break;
+        default:
+          i--;
+          break;
+      }
+    }
+    const invalidArgs = [];
+    const validate = (name, value) => {
+      if (value === void 0) {
+        invalidArgs.push(name);
+      }
+    };
+    validate(RegistrationParameter.Port, params.port);
+    validate(RegistrationParameter.PluginUUID, params.pluginUUID);
+    validate(RegistrationParameter.RegisterEvent, params.registerEvent);
+    validate(RegistrationParameter.Info, params.info);
+    if (invalidArgs.length > 0) {
+      throw new Error(`Unable to establish a connection with Stream Deck, missing command line arguments: ${invalidArgs.join(", ")}`);
+    }
+    return params;
+  }
+  /**
+   * Attempts to emit the {@link ev} that was received from the {@link Connection.connection}.
+   * @param ev Event message data received from Stream Deck.
+   */
+  tryEmit(ev) {
+    try {
+      const message = JSON.parse(ev.data.toString());
+      if (message.event) {
+        this.logger.trace(ev.data.toString());
+        this.emit(message.event, message);
+      } else {
+        this.logger.warn(`Received unknown message: ${ev.data}`);
+      }
+    } catch (err) {
+      this.logger.error(`Failed to parse message: ${ev.data}`, err);
+    }
+  }
+};
+var connection = new Connection();
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/event.js
+var Event = class {
+  /**
+   * Event that occurred.
+   */
+  type;
+  /**
+   * Initializes a new instance of the {@link Event} class.
+   * @param source Source of the event, i.e. the original message from Stream Deck.
+   */
+  constructor(source) {
+    this.type = source.event;
+  }
+};
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/action-event.js
+var ActionWithoutPayloadEvent = class extends Event {
+  action;
+  /**
+   * Initializes a new instance of the {@link ActionWithoutPayloadEvent} class.
+   * @param action Action that raised the event.
+   * @param source Source of the event, i.e. the original message from Stream Deck.
+   */
+  constructor(action2, source) {
+    super(source);
+    this.action = action2;
+  }
+};
+var ActionEvent = class extends ActionWithoutPayloadEvent {
+  /**
+   * Provides additional information about the event that occurred, e.g. how many `ticks` the dial was rotated, the current `state` of the action, etc.
+   */
+  payload;
+  /**
+   * Initializes a new instance of the {@link ActionEvent} class.
+   * @param action Action that raised the event.
+   * @param source Source of the event, i.e. the original message from Stream Deck.
+   */
+  constructor(action2, source) {
+    super(action2, source);
+    this.payload = source.payload;
+  }
+};
+
+// node_modules/@elgato/streamdeck/dist/plugin/manifest.js
+var import_node_fs2 = require("node:fs");
+var import_node_path4 = require("node:path");
+var manifest = new Lazy(() => {
+  const path5 = (0, import_node_path4.join)(process.cwd(), "manifest.json");
+  if (!(0, import_node_fs2.existsSync)(path5)) {
+    throw new Error("Failed to read manifest.json as the file does not exist.");
+  }
+  try {
+    return JSON.parse((0, import_node_fs2.readFileSync)(path5, {
+      encoding: "utf-8",
+      flag: "r"
+    }).toString());
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      return null;
+    } else {
+      throw e;
+    }
+  }
+});
+var softwareMinimumVersion = new Lazy(() => {
+  if (manifest.value === null) {
+    return null;
+  }
+  return new Version(manifest.value.Software.MinimumVersion);
+});
+function getSDKVersion() {
+  return manifest.value?.SDKVersion ?? null;
+}
+function getSoftwareMinimumVersion() {
+  return softwareMinimumVersion.value;
+}
+function getManifest() {
+  return manifest.value;
+}
+
+// node_modules/@elgato/streamdeck/dist/plugin/settings.js
+var import_node_crypto = require("node:crypto");
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/store.js
+var __items = /* @__PURE__ */ new Map();
 var ReadOnlyActionStore = class extends Enumerable {
   /**
    * Initializes a new instance of the {@link ReadOnlyActionStore}.
    */
   constructor() {
-    super(__items$1);
+    super(__items);
   }
   /**
    * Gets the action with the specified identifier.
@@ -5134,7 +4954,7 @@ var ReadOnlyActionStore = class extends Enumerable {
    * @returns The action, when present; otherwise `undefined`.
    */
   getActionById(id) {
-    return __items$1.get(id);
+    return __items.get(id);
   }
 };
 var ActionStore = class extends ReadOnlyActionStore {
@@ -5143,17 +4963,19 @@ var ActionStore = class extends ReadOnlyActionStore {
    * @param id The action's identifier.
    */
   delete(id) {
-    __items$1.delete(id);
+    __items.delete(id);
   }
   /**
    * Adds the action to the store.
    * @param action The action.
    */
   set(action2) {
-    __items$1.set(action2.id, action2);
+    __items.set(action2.id, action2);
   }
 };
 var actionStore = new ActionStore();
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/application-event.js
 var ApplicationEvent = class extends Event {
   /**
    * Monitored application that was launched/terminated.
@@ -5168,6 +4990,8 @@ var ApplicationEvent = class extends Event {
     this.application = source.payload.application;
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/device-event.js
 var DeviceEvent = class extends Event {
   device;
   /**
@@ -5180,6 +5004,8 @@ var DeviceEvent = class extends Event {
     this.device = device;
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/deep-link-event.js
 var DidReceiveDeepLinkEvent = class extends Event {
   /**
    * Deep-link URL routed from Stream Deck.
@@ -5242,6 +5068,24 @@ var DeepLinkURL = class _DeepLinkURL {
     return href.substring(0, Math.min(indexOf("?"), indexOf("#")));
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/global-settings-event.js
+var DidReceiveGlobalSettingsEvent = class extends Event {
+  /**
+   * Settings associated with the event.
+   */
+  settings;
+  /**
+   * Initializes a new instance of the {@link DidReceiveGlobalSettingsEvent} class.
+   * @param source Source of the event, i.e. the original message from Stream Deck.
+   */
+  constructor(source) {
+    super(source);
+    this.settings = source.payload.settings;
+  }
+};
+
+// node_modules/@elgato/streamdeck/dist/plugin/events/ui-message-event.js
 var SendToPluginEvent = class extends Event {
   action;
   /**
@@ -5259,134 +5103,165 @@ var SendToPluginEvent = class extends Event {
     this.payload = source.payload;
   }
 };
-function getGlobalSettings() {
-  return new Promise((resolve) => {
-    connection.once("didReceiveGlobalSettings", (ev) => resolve(ev.payload.settings));
-    connection.send({
-      event: "getGlobalSettings",
-      context: connection.registrationParameters.pluginUUID
-    });
-  });
-}
-function onDidReceiveGlobalSettings(listener) {
-  return connection.disposableOn("didReceiveGlobalSettings", (ev) => listener(new DidReceiveGlobalSettingsEvent(ev)));
-}
-function onDidReceiveSettings(listener) {
-  return connection.disposableOn("didReceiveSettings", (ev) => {
-    const action2 = actionStore.getActionById(ev.context);
-    if (action2) {
-      listener(new ActionEvent(action2, ev));
-    }
-  });
-}
-function setGlobalSettings(settings2) {
-  return connection.send({
-    event: "setGlobalSettings",
-    context: connection.registrationParameters.pluginUUID,
-    payload: settings2
-  });
-}
-var settings = /* @__PURE__ */ Object.freeze({
-  __proto__: null,
-  getGlobalSettings,
-  onDidReceiveGlobalSettings,
-  onDidReceiveSettings,
-  setGlobalSettings
-});
-var PropertyInspector = class {
-  router;
-  /**
-   * Action associated with the property inspector
-   */
-  action;
-  /**
-   * Initializes a new instance of the {@link PropertyInspector} class.
-   * @param router Router responsible for fetching requests.
-   * @param source Source the property inspector is associated with.
-   */
-  constructor(router2, source) {
-    this.router = router2;
-    this.action = actionStore.getActionById(source.context);
+
+// node_modules/@elgato/streamdeck/dist/plugin/validation.js
+function requiresSDKVersion(minimumVersion, feature) {
+  const sdkVersion = getSDKVersion();
+  if (sdkVersion !== null && minimumVersion > sdkVersion) {
+    throw new Error(`[ERR_NOT_SUPPORTED]: ${feature} requires manifest SDK version ${minimumVersion} or higher, but found version ${sdkVersion}; please update the "SDKVersion" in the plugin's manifest to ${minimumVersion} or higher.`);
   }
+}
+function requiresVersion(minimumVersion, streamDeckVersion, feature) {
+  const required = {
+    major: Math.floor(minimumVersion),
+    minor: Number(minimumVersion.toString().split(".").at(1) ?? 0),
+    // Account for JavaScript's floating point precision.
+    patch: 0,
+    build: 0
+  };
+  if (streamDeckVersion.compareTo(required) === -1) {
+    throw new Error(`[ERR_NOT_SUPPORTED]: ${feature} requires Stream Deck version ${required.major}.${required.minor} or higher, but current version is ${streamDeckVersion.major}.${streamDeckVersion.minor}; please update Stream Deck and the "Software.MinimumVersion" in the plugin's manifest to "${required.major}.${required.minor}" or higher.`);
+  }
+  const softwareMinimumVersion2 = getSoftwareMinimumVersion();
+  if (softwareMinimumVersion2 !== null && softwareMinimumVersion2.compareTo(required) === -1) {
+    throw new Error(`[ERR_NOT_SUPPORTED]: ${feature} requires Stream Deck version ${required.major}.${required.minor} or higher; please update the "Software.MinimumVersion" in the plugin's manifest to "${required.major}.${required.minor}" or higher.`);
+  }
+}
+
+// node_modules/@elgato/streamdeck/dist/plugin/settings.js
+var __useExperimentalMessageIdentifiers = false;
+var settings = {
   /**
-   * Sends a fetch request to the property inspector; the property inspector can listen for requests by registering routes.
-   * @template T The type of the response body.
-   * @param requestOrPath The request, or the path of the request.
-   * @param bodyOrUndefined Request body, or moot when constructing the request with {@link MessageRequestOptions}.
-   * @returns The response.
+   * Available from Stream Deck 7.1; determines whether message identifiers should be sent when getting
+   * action-instance or global settings.
+   *
+   * When `true`, the did-receive events associated with settings are only emitted when the action-instance
+   * or global settings are changed in the property inspector.
+   * @returns The value.
    */
-  async fetch(requestOrPath, bodyOrUndefined) {
-    if (typeof requestOrPath === "string") {
-      return this.router.fetch(`${PUBLIC_PATH_PREFIX}${requestOrPath}`, bodyOrUndefined);
-    } else {
-      return this.router.fetch({
-        ...requestOrPath,
-        path: `${PUBLIC_PATH_PREFIX}${requestOrPath.path}`
+  get useExperimentalMessageIdentifiers() {
+    return __useExperimentalMessageIdentifiers;
+  },
+  /**
+   * Available from Stream Deck 7.1; determines whether message identifiers should be sent when getting
+   * action-instance or global settings.
+   *
+   * When `true`, the did-receive events associated with settings are only emitted when the action-instance
+   * or global settings are changed in the property inspector.
+   */
+  set useExperimentalMessageIdentifiers(value) {
+    requiresVersion(7.1, connection.version, "Message identifiers");
+    __useExperimentalMessageIdentifiers = value;
+  },
+  /**
+   * Gets the global settings associated with the plugin.
+   * @template T The type of global settings associated with the plugin.
+   * @returns Promise containing the plugin's global settings.
+   */
+  getGlobalSettings: () => {
+    return new Promise((resolve) => {
+      connection.once("didReceiveGlobalSettings", (ev) => resolve(ev.payload.settings));
+      connection.send({
+        event: "getGlobalSettings",
+        context: connection.registrationParameters.pluginUUID,
+        id: (0, import_node_crypto.randomUUID)()
       });
-    }
-  }
+    });
+  },
   /**
-   * Sends the {@link payload} to the property inspector. The plugin can also receive information from the property inspector via {@link streamDeck.ui.onSendToPlugin} and {@link SingletonAction.onSendToPlugin}
-   * allowing for bi-directional communication.
-   * @template T The type of the payload received from the property inspector.
-   * @param payload Payload to send to the property inspector.
-   * @returns `Promise` resolved when {@link payload} has been sent to the property inspector.
+   * Occurs when the global settings are requested, or when the the global settings were updated in
+   * the property inspector.
+   * @template T The type of settings associated with the action.
+   * @param listener Function to be invoked when the event occurs.
+   * @returns A disposable that removes the listener.
    */
-  sendToPropertyInspector(payload) {
-    return connection.send({
-      event: "sendToPropertyInspector",
-      context: this.action.id,
-      payload
+  onDidReceiveGlobalSettings: (listener) => {
+    return connection.disposableOn("didReceiveGlobalSettings", (ev) => {
+      if (settings.useExperimentalMessageIdentifiers && ev.id) {
+        return;
+      }
+      listener(new DidReceiveGlobalSettingsEvent(ev));
+    });
+  },
+  /**
+   * Occurs when the settings associated with an action instance are requested, or when the the settings
+   * were updated in the property inspector.
+   * @template T The type of settings associated with the action.
+   * @param listener Function to be invoked when the event occurs.
+   * @returns A disposable that removes the listener.
+   */
+  onDidReceiveSettings: (listener) => {
+    return connection.disposableOn("didReceiveSettings", (ev) => {
+      if (settings.useExperimentalMessageIdentifiers && ev.id) {
+        return;
+      }
+      const action2 = actionStore.getActionById(ev.context);
+      if (action2) {
+        listener(new ActionEvent(action2, ev));
+      }
+    });
+  },
+  /**
+   * Sets the global settings associated the plugin; these settings are only available to this plugin,
+   * and should be used to persist information securely.
+   * @param settings Settings to save.
+   * @example
+   * streamDeck.settings.setGlobalSettings({
+   *   apiKey,
+   *   connectedDate: new Date()
+   * })
+   */
+  setGlobalSettings: async (settings2) => {
+    await connection.send({
+      event: "setGlobalSettings",
+      context: connection.registrationParameters.pluginUUID,
+      payload: settings2
     });
   }
 };
-var current;
-var debounceCount = 0;
-function getCurrentUI() {
-  return current;
-}
-var router = new MessageGateway(async (payload) => {
-  const current2 = getCurrentUI();
-  if (current2) {
-    await connection.send({
-      event: "sendToPropertyInspector",
-      context: current2.action.id,
-      payload
-    });
-    return true;
-  }
-  return false;
-}, (source) => actionStore.getActionById(source.context));
-function isCurrent(ev) {
-  return current?.action?.id === ev.context && current?.action?.manifestId === ev.action && current?.action?.device?.id === ev.device;
-}
-connection.on("propertyInspectorDidAppear", (ev) => {
-  if (isCurrent(ev)) {
-    debounceCount++;
-  } else {
-    debounceCount = 1;
-    current = new PropertyInspector(router, ev);
-  }
-});
-connection.on("propertyInspectorDidDisappear", (ev) => {
-  if (isCurrent(ev)) {
-    debounceCount--;
-    if (debounceCount <= 0) {
-      current = void 0;
-    }
-  }
-});
-connection.on("sendToPlugin", (ev) => router.process(ev));
+
+// node_modules/@elgato/streamdeck/dist/plugin/ui.js
 var UIController = class {
   /**
-   * Gets the current property inspector.
-   * @returns The property inspector; otherwise `undefined`.
+   * Action associated with the current property inspector.
    */
-  get current() {
-    return getCurrentUI();
+  #action;
+  /**
+   * To overcome event races, the debounce counter keeps track of appear vs disappear events, ensuring
+   * we only clear the current ui when an equal number of matching disappear events occur.
+   */
+  #appearanceStackCount = 0;
+  /**
+   * Initializes a new instance of the {@link UIController} class.
+   */
+  constructor() {
+    this.onDidAppear((ev) => {
+      if (this.#isCurrent(ev.action)) {
+        this.#appearanceStackCount++;
+      } else {
+        this.#appearanceStackCount = 1;
+        this.#action = ev.action;
+      }
+    });
+    this.onDidDisappear((ev) => {
+      if (this.#isCurrent(ev.action)) {
+        this.#appearanceStackCount--;
+        if (this.#appearanceStackCount <= 0) {
+          this.#action = void 0;
+        }
+      }
+    });
   }
   /**
-   * Occurs when the property inspector associated with the action becomes visible, i.e. the user selected an action in the Stream Deck application. See also {@link UIController.onDidDisappear}.
+   * Gets the action associated with the current property.
+   * @returns The action; otherwise `undefined` when a property inspector is not visible.
+   */
+  get action() {
+    return this.#action;
+  }
+  /**
+   * Occurs when the property inspector associated with the action becomes visible, i.e. the user
+   * selected an action in the Stream Deck application..
    * @template T The type of settings associated with the action.
    * @param listener Function to be invoked when the event occurs.
    * @returns A disposable that, when disposed, removes the listener.
@@ -5400,7 +5275,8 @@ var UIController = class {
     });
   }
   /**
-   * Occurs when the property inspector associated with the action becomes destroyed, i.e. the user unselected the action in the Stream Deck application. See also {@link UIController.onDidAppear}.
+   * Occurs when the property inspector associated with the action disappears, i.e. the user unselected
+   * the action in the Stream Deck application.
    * @template T The type of settings associated with the action.
    * @param listener Function to be invoked when the event occurs.
    * @returns A disposable that, when disposed, removes the listener.
@@ -5414,15 +5290,14 @@ var UIController = class {
     });
   }
   /**
-   * Occurs when a message was sent to the plugin _from_ the property inspector. The plugin can also send messages _to_ the property inspector using {@link UIController.current.sendMessage}
-   * or {@link Action.sendToPropertyInspector}.
+   * Occurs when a message was sent to the plugin _from_ the property inspector.
    * @template TPayload The type of the payload received from the property inspector.
    * @template TSettings The type of settings associated with the action.
    * @param listener Function to be invoked when the event occurs.
    * @returns A disposable that, when disposed, removes the listener.
    */
   onSendToPlugin(listener) {
-    return router.disposableOn("unhandledMessage", (ev) => {
+    return connection.disposableOn("sendToPlugin", (ev) => {
       const action2 = actionStore.getActionById(ev.context);
       if (action2) {
         listener(new SendToPluginEvent(action2, ev));
@@ -5430,31 +5305,41 @@ var UIController = class {
     });
   }
   /**
-   * Registers the function as a route, exposing it to the property inspector via `streamDeck.plugin.fetch(path)`.
-   * @template TBody The type of the request body.
-   * @template TSettings The type of the action's settings.
-   * @param path Path that identifies the route.
-   * @param handler Handler to be invoked when a matching request is received.
-   * @param options Optional routing configuration.
-   * @returns Disposable capable of removing the route handler.
-   * @example
-   * streamDeck.ui.registerRoute("/toggle-light", async (req, res) => {
-   *   await lightService.toggle(req.body.lightId);
-   *   res.success();
-   * });
+   * Sends the payload to the property inspector; the payload is only sent when the property inspector
+   * is visible for an action provided by this plugin.
+   * @param payload Payload to send.
    */
-  registerRoute(path2, handler, options) {
-    return router.route(`${PUBLIC_PATH_PREFIX}${path2}`, handler, options);
+  async sendToPropertyInspector(payload) {
+    if (this.#action) {
+      await connection.send({
+        event: "sendToPropertyInspector",
+        context: this.#action.id,
+        payload
+      });
+    }
+  }
+  /**
+   * Determines whether the specified action is the action for the current property inspector.
+   * @param action Action to check against.
+   * @returns `true` when the actions are the same.
+   */
+  #isCurrent(action2) {
+    return this.#action?.id === action2.id && this.#action?.manifestId === action2.manifestId && this.#action?.device?.id === action2.device.id;
   }
 };
 var ui = new UIController();
-var __items = /* @__PURE__ */ new Map();
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/action.js
+var import_node_crypto2 = require("node:crypto");
+
+// node_modules/@elgato/streamdeck/dist/plugin/devices/store.js
+var __items2 = /* @__PURE__ */ new Map();
 var ReadOnlyDeviceStore = class extends Enumerable {
   /**
    * Initializes a new instance of the {@link ReadOnlyDeviceStore}.
    */
   constructor() {
-    super(__items);
+    super(__items2);
   }
   /**
    * Gets the Stream Deck {@link Device} associated with the specified {@link deviceId}.
@@ -5462,7 +5347,7 @@ var ReadOnlyDeviceStore = class extends Enumerable {
    * @returns The Stream Deck device information; otherwise `undefined` if a device with the {@link deviceId} does not exist.
    */
   getDeviceById(deviceId) {
-    return __items.get(deviceId);
+    return __items2.get(deviceId);
   }
 };
 var DeviceStore = class extends ReadOnlyDeviceStore {
@@ -5471,10 +5356,12 @@ var DeviceStore = class extends ReadOnlyDeviceStore {
    * @param device The device.
    */
   set(device) {
-    __items.set(device.id, device);
+    __items2.set(device.id, device);
   }
 };
 var deviceStore = new DeviceStore();
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/context.js
 var ActionContext = class {
   /**
    * Device the action is associated with.
@@ -5539,26 +5426,30 @@ var ActionContext = class {
     };
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/action.js
+var REQUEST_TIMEOUT = 15 * 1e3;
 var Action = class extends ActionContext {
   /**
+   * Gets the resources (files) associated with this action; these resources are embedded into the
+   * action when it is exported, either individually, or as part of a profile.
+   *
+   * Available from Stream Deck 7.1.
+   * @returns The resources.
+   */
+  async getResources() {
+    requiresVersion(7.1, connection.version, "getResources");
+    const res = await this.#fetch("getResources", "didReceiveResources");
+    return res.payload.resources;
+  }
+  /**
    * Gets the settings associated this action instance.
-   * @template U The type of settings associated with the action.
+   * @template U The type of settings associated with the action.D
    * @returns Promise containing the action instance's settings.
    */
-  getSettings() {
-    return new Promise((resolve) => {
-      const callback = (ev) => {
-        if (ev.context == this.id) {
-          resolve(ev.payload.settings);
-          connection.removeListener("didReceiveSettings", callback);
-        }
-      };
-      connection.on("didReceiveSettings", callback);
-      connection.send({
-        event: "getSettings",
-        context: this.id
-      });
-    });
+  async getSettings() {
+    const res = await this.#fetch("getSettings", "didReceiveSettings");
+    return res.payload.settings;
   }
   /**
    * Determines whether this instance is a dial.
@@ -5573,6 +5464,27 @@ var Action = class extends ActionContext {
    */
   isKey() {
     return this.controllerType === "Keypad";
+  }
+  /**
+   * Sets the resources (files) associated with this action; these resources are embedded into the
+   * action when it is exported, either individually, or as part of a profile.
+   *
+   * Available from Stream Deck 7.1.
+   * @example
+   * action.setResources({
+   *   fileOne: "c:\\hello-world.txt",
+   *   anotherFile: "c:\\icon.png"
+   * });
+   * @param resources The resources as a map of file paths.
+   * @returns `Promise` resolved when the resources are saved to Stream Deck.
+   */
+  setResources(resources) {
+    requiresVersion(7.1, connection.version, "setResources");
+    return connection.send({
+      event: "setResources",
+      context: this.id,
+      payload: resources
+    });
   }
   /**
    * Sets the {@link settings} associated with this action instance. Use in conjunction with {@link Action.getSettings}.
@@ -5596,7 +5508,35 @@ var Action = class extends ActionContext {
       context: this.id
     });
   }
+  /**
+   * Fetches information from Stream Deck by sending the command, and awaiting the event.
+   * @param command Name of the event (command) to send.
+   * @param event Name of the event to await.
+   * @returns The payload from the received event.
+   */
+  async #fetch(command, event) {
+    const { resolve, reject, promise } = withResolvers();
+    const timeoutId = setTimeout(() => {
+      listener.dispose();
+      reject("The request timed out");
+    }, REQUEST_TIMEOUT);
+    const listener = connection.disposableOn(event, (ev) => {
+      if (ev.context == this.id) {
+        clearTimeout(timeoutId);
+        listener.dispose();
+        resolve(ev);
+      }
+    });
+    await connection.send({
+      event: command,
+      context: this.id,
+      id: (0, import_node_crypto2.randomUUID)()
+    });
+    return promise;
+  }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/dial.js
 var DialAction = class extends Action {
   /**
    * Private backing field for {@link DialAction.coordinates}.
@@ -5704,6 +5644,8 @@ var DialAction = class extends Action {
     };
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/key.js
 var KeyAction = class extends Action {
   /**
    * Private backing field for {@link KeyAction.coordinates}.
@@ -5812,7 +5754,9 @@ var KeyAction = class extends Action {
     };
   }
 };
-var manifest = new Lazy(() => getManifest());
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/service.js
+var manifest2 = new Lazy(() => getManifest());
 var ActionService = class extends ReadOnlyActionStore {
   /**
    * Initializes a new instance of the {@link ActionService} class.
@@ -5863,6 +5807,22 @@ var ActionService = class extends ReadOnlyActionStore {
     return connection.disposableOn("dialUp", (ev) => {
       const action2 = actionStore.getActionById(ev.context);
       if (action2?.isDial()) {
+        listener(new ActionEvent(action2, ev));
+      }
+    });
+  }
+  /**
+   * Occurs when the resources were updated within the property inspector.
+   * @param listener Function to be invoked when the event occurs.
+   * @returns A disposable that, when disposed, removes the listener.
+   */
+  onDidReceiveResources(listener) {
+    return connection.disposableOn("didReceiveResources", (ev) => {
+      if (ev.id !== void 0) {
+        return;
+      }
+      const action2 = actionStore.getActionById(ev.context);
+      if (action2) {
         listener(new ActionEvent(action2, ev));
       }
     });
@@ -5965,7 +5925,7 @@ var ActionService = class extends ReadOnlyActionStore {
     if (action2.manifestId === void 0) {
       throw new Error("The action's manifestId cannot be undefined.");
     }
-    if (!manifest.value.Actions.some((a) => a.UUID === action2.manifestId)) {
+    if (manifest2.value !== null && !manifest2.value.Actions.some((a) => a.UUID === action2.manifestId)) {
       throw new Error(`The action's manifestId was not found within the manifest: ${action2.manifestId}`);
     }
     const { manifestId } = action2;
@@ -5984,7 +5944,8 @@ var ActionService = class extends ReadOnlyActionStore {
     route(this.onDialUp, action2.onDialUp);
     route(this.onDialRotate, action2.onDialRotate);
     route(ui.onSendToPlugin, action2.onSendToPlugin);
-    route(onDidReceiveSettings, action2.onDidReceiveSettings);
+    route(this.onDidReceiveResources, action2.onDidReceiveResources);
+    route(settings.onDidReceiveSettings, action2.onDidReceiveSettings);
     route(this.onKeyDown, action2.onKeyDown);
     route(this.onKeyUp, action2.onKeyUp);
     route(ui.onDidAppear, action2.onPropertyInspectorDidAppear);
@@ -5996,20 +5957,8 @@ var ActionService = class extends ReadOnlyActionStore {
   }
 };
 var actionService = new ActionService();
-function requiresVersion(minimumVersion, streamDeckVersion, feature) {
-  const required = {
-    major: Math.floor(minimumVersion),
-    minor: Number(minimumVersion.toString().split(".").at(1) ?? 0),
-    // Account for JavaScript's floating point precision.
-    patch: 0,
-    build: 0
-  };
-  if (streamDeckVersion.compareTo(required) === -1) {
-    throw new Error(`[ERR_NOT_SUPPORTED]: ${feature} requires Stream Deck version ${required.major}.${required.minor} or higher, but current version is ${streamDeckVersion.major}.${streamDeckVersion.minor}; please update Stream Deck and the "Software.MinimumVersion" in the plugin's manifest to "${required.major}.${required.minor}" or higher.`);
-  } else if (getSoftwareMinimumVersion().compareTo(required) === -1) {
-    throw new Error(`[ERR_NOT_SUPPORTED]: ${feature} requires Stream Deck version ${required.major}.${required.minor} or higher; please update the "Software.MinimumVersion" in the plugin's manifest to "${required.major}.${required.minor}" or higher.`);
-  }
-}
+
+// node_modules/@elgato/streamdeck/dist/plugin/devices/device.js
 var Device = class {
   /**
    * Private backing field for {@link Device.isConnected}.
@@ -6086,6 +6035,8 @@ var Device = class {
     return this.#info.type;
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/devices/service.js
 var DeviceService = class extends ReadOnlyDeviceStore {
   /**
    * Initializes a new instance of the {@link DeviceService}.
@@ -6135,25 +6086,36 @@ var DeviceService = class extends ReadOnlyDeviceStore {
   }
 };
 var deviceService = new DeviceService();
+
+// node_modules/@elgato/streamdeck/dist/plugin/i18n.js
+var import_node_fs3 = __toESM(require("node:fs"), 1);
+var import_node_path5 = __toESM(require("node:path"), 1);
 function fileSystemLocaleProvider(language) {
-  const filePath = import_node_path.default.join(process.cwd(), `${language}.json`);
-  if (!import_node_fs.default.existsSync(filePath)) {
+  const filePath = import_node_path5.default.join(process.cwd(), `${language}.json`);
+  if (!import_node_fs3.default.existsSync(filePath)) {
     return null;
   }
   try {
-    const contents = import_node_fs.default.readFileSync(filePath, { flag: "r" })?.toString();
+    const contents = import_node_fs3.default.readFileSync(filePath, { flag: "r" })?.toString();
     return parseLocalizations(contents);
   } catch (err) {
     logger.error(`Failed to load translations from ${filePath}`, err);
     return null;
   }
 }
-var errorCode = {
-  /**
-   * Indicates the current Node.js SDK is not compatible with the SDK Version specified within the manifest.
-   */
-  incompatibleSdkVersion: 652025
-};
+function parseLocalizations(contents) {
+  const json = JSON.parse(contents);
+  if (json !== void 0 && json !== null && typeof json === "object" && "Localization" in json) {
+    return json["Localization"];
+  }
+  throw new TypeError(`Translations must be a JSON object nested under a property named "Localization"`);
+}
+
+// node_modules/@elgato/streamdeck/dist/plugin/profiles.js
+var profiles_exports = {};
+__export(profiles_exports, {
+  switchToProfile: () => switchToProfile
+});
 function switchToProfile(deviceId, profile, page) {
   if (page !== void 0) {
     requiresVersion(6.5, connection.version, "Switching to a profile page");
@@ -6168,9 +6130,16 @@ function switchToProfile(deviceId, profile, page) {
     }
   });
 }
-var profiles = /* @__PURE__ */ Object.freeze({
-  __proto__: null,
-  switchToProfile
+
+// node_modules/@elgato/streamdeck/dist/plugin/system.js
+var system_exports = {};
+__export(system_exports, {
+  getSecrets: () => getSecrets,
+  onApplicationDidLaunch: () => onApplicationDidLaunch,
+  onApplicationDidTerminate: () => onApplicationDidTerminate,
+  onDidReceiveDeepLink: () => onDidReceiveDeepLink,
+  onSystemDidWakeUp: () => onSystemDidWakeUp,
+  openUrl: () => openUrl
 });
 function onApplicationDidLaunch(listener) {
   return connection.disposableOn("applicationDidLaunch", (ev) => listener(new ApplicationEvent(ev)));
@@ -6193,14 +6162,19 @@ function openUrl(url) {
     }
   });
 }
-var system = /* @__PURE__ */ Object.freeze({
-  __proto__: null,
-  onApplicationDidLaunch,
-  onApplicationDidTerminate,
-  onDidReceiveDeepLink,
-  onSystemDidWakeUp,
-  openUrl
-});
+function getSecrets() {
+  requiresVersion(6.9, connection.version, "Secrets");
+  requiresSDKVersion(3, "Secrets");
+  return new Promise((resolve) => {
+    connection.once("didReceiveSecrets", (ev) => resolve(ev.payload.secrets));
+    connection.send({
+      event: "getSecrets",
+      context: connection.registrationParameters.pluginUUID
+    });
+  });
+}
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/decorators.js
 function action(definition) {
   const manifestId = definition.UUID;
   return function(target, context) {
@@ -6212,6 +6186,8 @@ function action(definition) {
     };
   };
 }
+
+// node_modules/@elgato/streamdeck/dist/plugin/actions/singleton-action.js
 var SingletonAction = class {
   /**
    * The universally-unique value that identifies the action within the manifest.
@@ -6225,6 +6201,8 @@ var SingletonAction = class {
     return actionStore.filter((a) => a.manifestId === this.manifestId);
   }
 };
+
+// node_modules/@elgato/streamdeck/dist/plugin/index.js
 var i18n;
 var streamDeck = {
   /**
@@ -6263,18 +6241,11 @@ var streamDeck = {
     return logger;
   },
   /**
-   * Manifest associated with the plugin, as defined within the `manifest.json` file.
-   * @returns The manifest.
-   */
-  get manifest() {
-    return getManifest();
-  },
-  /**
    * Namespace for Stream Deck profiles.
    * @returns Profiles namespace.
    */
   get profiles() {
-    return profiles;
+    return profiles_exports;
   },
   /**
    * Namespace for persisting settings within Stream Deck.
@@ -6288,7 +6259,7 @@ var streamDeck = {
    * @returns System namespace.
    */
   get system() {
-    return system;
+    return system_exports;
   },
   /**
    * Namespace for interacting with UI (property inspector) associated with the plugin.
@@ -6305,11 +6276,7 @@ var streamDeck = {
     return connection.connect();
   }
 };
-registerCreateLogEntryRoute(router, logger);
-if (streamDeck.manifest.SDKVersion >= 3) {
-  logger.error("[ERR_NOT_SUPPORTED]: Manifest SDKVersion 3 requires @elgato/streamdeck 2.0 or higher.");
-  process.exit(errorCode.incompatibleSdkVersion);
-}
+var plugin_default = streamDeck;
 
 // src/actions/base-memory-action.ts
 var import_child_process2 = require("child_process");
@@ -6470,7 +6437,7 @@ var METRIC_CONFIGS = {
 var execFileAsync2 = (0, import_util2.promisify)(import_child_process2.execFile);
 var BaseMemoryAction = class extends SingletonAction {
   intervals = /* @__PURE__ */ new Map();
-  logger = streamDeck.logger.createScope("MemoryMonitor");
+  logger = plugin_default.logger.createScope("MemoryMonitor");
   async onWillAppear(ev) {
     const actionId = ev.action.id;
     this.logger.info(`${this.metricType} action appeared: ${actionId}`);
@@ -6609,7 +6576,7 @@ var execFileAsync3 = (0, import_util3.promisify)(import_child_process3.execFile)
 var MemorySelectorBase = class extends SingletonAction {
   intervals = /* @__PURE__ */ new Map();
   actionSettings = /* @__PURE__ */ new Map();
-  logger = streamDeck.logger.createScope("MemorySelector");
+  logger = plugin_default.logger.createScope("MemorySelector");
   async onWillAppear(ev) {
     const actionId = ev.action.id;
     const settings2 = ev.payload.settings || {};
@@ -6695,21 +6662,21 @@ var MemorySelector = action({ UUID: "com.joshroman.macos-memory.custom" })(
 );
 
 // src/plugin.ts
-streamDeck.logger.setLevel(LogLevel.DEBUG);
-var logger2 = streamDeck.logger.createScope("Plugin");
+plugin_default.logger.setLevel("debug");
+var logger2 = plugin_default.logger.createScope("Plugin");
 logger2.info("macOS Memory plugin starting...");
 logger2.info("Registering actions...");
-streamDeck.actions.registerAction(new SwapMonitor());
-streamDeck.actions.registerAction(new MemoryUsed());
-streamDeck.actions.registerAction(new AppMemory());
-streamDeck.actions.registerAction(new WiredMemory());
-streamDeck.actions.registerAction(new CompressedMemory());
-streamDeck.actions.registerAction(new CachedFiles());
-streamDeck.actions.registerAction(new PhysicalMemory());
-streamDeck.actions.registerAction(new MemorySelector());
+plugin_default.actions.registerAction(new SwapMonitor());
+plugin_default.actions.registerAction(new MemoryUsed());
+plugin_default.actions.registerAction(new AppMemory());
+plugin_default.actions.registerAction(new WiredMemory());
+plugin_default.actions.registerAction(new CompressedMemory());
+plugin_default.actions.registerAction(new CachedFiles());
+plugin_default.actions.registerAction(new PhysicalMemory());
+plugin_default.actions.registerAction(new MemorySelector());
 logger2.info("All actions registered");
 logger2.info("Connecting to Stream Deck...");
-streamDeck.connect().then(() => {
+plugin_default.connect().then(() => {
   logger2.info("Connected to Stream Deck!");
 }).catch((err) => {
   logger2.error("Failed to connect:", err);
@@ -6717,7 +6684,6 @@ streamDeck.connect().then(() => {
 /*! Bundled license information:
 
 @elgato/schemas/dist/streamdeck/plugins/index.mjs:
-@elgato/streamdeck/dist/index.js:
   (**!
    * @author Elgato
    * @module elgato/streamdeck

@@ -10,7 +10,7 @@
   "author": "Josh Roman",
   "license": "MIT",
   "dependencies": {
-    "@elgato/streamdeck": "^1.2.0"
+    "@elgato/streamdeck": "^2.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^29.0.0",
