@@ -2,14 +2,17 @@
 node_modules/
 
 # Build output (regenerated from source)
-com.joshroman.swapmonitor.sdPlugin/bin/
+com.joshroman.macos-memory.sdPlugin/bin/
 
 # Logs
 logs/
-com.joshroman.swapmonitor.sdPlugin/logs/
+com.joshroman.macos-memory.sdPlugin/logs/
 
-# Debug files
-DEBUG_PROMPT.md
+# Temp files
+tmp/
+
+# Packaged plugin (regenerated)
+*.streamDeckPlugin
 
 # macOS
 .DS_Store

@@ -1,116 +1,117 @@
 {
-  "Author": "Josh Roman",
-  "Name": "macOS Memory",
-  "Description": "Monitor macOS memory and swap usage with color-coded progress rings",
-  "Version": "1.1.0.0",
-  "UUID": "com.joshroman.macos-memory",
-  "SDKVersion": 2,
-  "Software": {
-    "MinimumVersion": "6.6"
-  },
-  "Nodejs": {
-    "Version": "20",
-    "Debug": "enabled"
-  },
-  "OS": [
-    {
-      "Platform": "mac",
-      "MinimumVersion": "10.15"
-    }
-  ],
-  "Category": "macOS Memory",
-  "CategoryIcon": "imgs/category",
-  "Icon": "imgs/plugin",
-  "CodePath": "bin/plugin.js",
-  "Actions": [
-    {
-      "UUID": "com.joshroman.macos-memory.swap",
-      "Name": "Swap Usage",
-      "Icon": "imgs/actions/swap",
-      "Tooltip": "Displays current swap memory usage",
-      "States": [
-        {
-          "Image": "imgs/actions/swap"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.memory-used",
-      "Name": "Memory Used",
-      "Icon": "imgs/actions/memory",
-      "Tooltip": "Displays total memory usage",
-      "States": [
-        {
-          "Image": "imgs/actions/memory"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.app-memory",
-      "Name": "App Memory",
-      "Icon": "imgs/actions/app",
-      "Tooltip": "Displays memory used by applications",
-      "States": [
-        {
-          "Image": "imgs/actions/app"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.wired",
-      "Name": "Wired Memory",
-      "Icon": "imgs/actions/wired",
-      "Tooltip": "Displays wired (locked) memory",
-      "States": [
-        {
-          "Image": "imgs/actions/wired"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.compressed",
-      "Name": "Compressed",
-      "Icon": "imgs/actions/compressed",
-      "Tooltip": "Displays compressed memory",
-      "States": [
-        {
-          "Image": "imgs/actions/compressed"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.cached",
-      "Name": "Cached Files",
-      "Icon": "imgs/actions/cached",
-      "Tooltip": "Displays cached file memory",
-      "States": [
-        {
-          "Image": "imgs/actions/cached"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.physical",
-      "Name": "Physical Memory",
-      "Icon": "imgs/actions/physical",
-      "Tooltip": "Displays total physical RAM",
-      "States": [
-        {
-          "Image": "imgs/actions/physical"
-        }
-      ]
-    },
-    {
-      "UUID": "com.joshroman.macos-memory.custom",
-      "Name": "Custom Metric",
-      "Icon": "imgs/actions/custom",
-      "Tooltip": "Configurable memory metric display",
-      "PropertyInspectorPath": "pi/memory-selector.html",
-      "States": [
-        {
-          "Image": "imgs/actions/custom"
-        }
-      ]
-    }
-  ]
+	"Author": "Josh Roman",
+	"Name": "Mac Memory Monitor",
+	"Description": "Monitor macOS RAM, swap, and memory pressure with live color-coded progress rings. Track memory used, app memory, wired, compressed, cached, and swap usage in real-time on your Stream Deck.",
+	"Version": "1.1.0.0",
+	"UUID": "com.joshroman.macos-memory",
+	"URL": "https://github.com/joshroman/streamdeck-macos-memory",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.6"
+	},
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.15"
+		}
+	],
+	"Category": "Mac Memory Monitor",
+	"CategoryIcon": "imgs/category",
+	"Icon": "imgs/plugin",
+	"CodePath": "bin/plugin.js",
+	"Actions": [
+		{
+			"UUID": "com.joshroman.macos-memory.swap",
+			"Name": "Swap Usage Monitor",
+			"Icon": "imgs/actions/swap",
+			"Tooltip": "Monitor macOS swap memory usage with color-coded alerts (green/yellow/red)",
+			"States": [
+				{
+					"Image": "imgs/actions/swap"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.memory-used",
+			"Name": "RAM Usage Monitor",
+			"Icon": "imgs/actions/memory",
+			"Tooltip": "Monitor total RAM memory usage on macOS with live progress ring",
+			"States": [
+				{
+					"Image": "imgs/actions/memory"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.app-memory",
+			"Name": "App Memory Monitor",
+			"Icon": "imgs/actions/app",
+			"Tooltip": "Monitor memory consumed by running applications on macOS",
+			"States": [
+				{
+					"Image": "imgs/actions/app"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.wired",
+			"Name": "Wired Memory Monitor",
+			"Icon": "imgs/actions/wired",
+			"Tooltip": "Monitor wired (locked) memory that cannot be paged to disk",
+			"States": [
+				{
+					"Image": "imgs/actions/wired"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.compressed",
+			"Name": "Compressed Memory",
+			"Icon": "imgs/actions/compressed",
+			"Tooltip": "Monitor macOS compressed memory to optimize RAM usage",
+			"States": [
+				{
+					"Image": "imgs/actions/compressed"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.cached",
+			"Name": "Cached Files Monitor",
+			"Icon": "imgs/actions/cached",
+			"Tooltip": "Monitor macOS file cache memory usage",
+			"States": [
+				{
+					"Image": "imgs/actions/cached"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.physical",
+			"Name": "Physical RAM Display",
+			"Icon": "imgs/actions/physical",
+			"Tooltip": "Display total installed physical RAM on your Mac",
+			"States": [
+				{
+					"Image": "imgs/actions/physical"
+				}
+			]
+		},
+		{
+			"UUID": "com.joshroman.macos-memory.custom",
+			"Name": "Custom Memory Metric",
+			"Icon": "imgs/actions/custom",
+			"Tooltip": "Configure which memory metric to display on this button",
+			"PropertyInspectorPath": "pi/memory-selector.html",
+			"States": [
+				{
+					"Image": "imgs/actions/custom"
+				}
+			]
+		}
+	]
 }
