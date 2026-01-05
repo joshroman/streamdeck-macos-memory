@@ -1,10 +1,10 @@
 {
-  "name": "com.joshroman.swapmonitor",
+  "name": "com.joshroman.macos-memory",
   "version": "1.0.0",
-  "description": "Stream Deck plugin to monitor macOS swap usage",
-  "main": "com.joshroman.swapmonitor.sdPlugin/bin/plugin.js",
+  "description": "Stream Deck plugin to monitor macOS memory and swap usage",
+  "main": "com.joshroman.macos-memory.sdPlugin/bin/plugin.js",
   "scripts": {
-    "build": "tsc --noEmit && esbuild src/plugin.ts --bundle --platform=node --format=cjs --outfile=com.joshroman.swapmonitor.sdPlugin/bin/plugin.js --sourcemap",
+    "build": "tsc --noEmit && esbuild src/plugin.ts --bundle --platform=node --format=cjs --outfile=com.joshroman.macos-memory.sdPlugin/bin/plugin.js --sourcemap",
     "watch": "npm run build -- --watch"
   },
   "author": "Josh Roman",

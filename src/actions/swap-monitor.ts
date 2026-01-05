@@ -116,7 +116,7 @@ class SwapMonitorBase extends SingletonAction {
 }
 
 // Apply the action decorator manually (esbuild doesn't support native decorators)
-export const SwapMonitor = action({ UUID: "com.joshroman.swapmonitor.monitor" })(
+export const SwapMonitor = action({ UUID: "com.joshroman.macos-memory.swap" })(
     SwapMonitorBase,
     { kind: "class", name: "SwapMonitor" } as ClassDecoratorContext
 );

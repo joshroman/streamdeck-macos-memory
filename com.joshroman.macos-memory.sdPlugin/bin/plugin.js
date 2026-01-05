@@ -6392,7 +6392,7 @@ var SwapMonitorBase = class extends SingletonAction {
     return `data:image/svg+xml;base64,${base64}`;
   }
 };
-var SwapMonitor = action({ UUID: "com.joshroman.swapmonitor.monitor" })(
+var SwapMonitor = action({ UUID: "com.joshroman.macos-memory.swap" })(
   SwapMonitorBase,
   { kind: "class", name: "SwapMonitor" }
 );
